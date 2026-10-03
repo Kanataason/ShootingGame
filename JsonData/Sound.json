@@ -1,0 +1,49 @@
+{
+    "Sounds": [
+        {
+            "Name": "PlayerShot",
+            "Path": "Library/sound/Shot.mp3",
+            "Volume": 120,
+            "BufferNum": 3
+        },
+        {
+            "Name": "PlayerShotGun",
+            "Path": "Library/sound/ShotGun.mp3",
+            "Volume": 120,
+            "BufferNum": 3
+        },
+        {
+            "Name": "BossExplosion",
+            "Path": "Library/sound/BossExplosion.mp3",
+            "Volume": 200,
+            "BufferNum": 1
+        },
+        {
+            "Name": "PlayerHit",
+            "Path": "Library/sound/Hit.mp3",
+            "Volume": 130,
+            "BufferNum": 1
+        },
+        {
+            "Name": "CharacterExplosion",
+            "Path": "Library/sound/CharacterExplosion.mp3",
+            "Volume": 160,
+            "BufferNum": 1
+        },
+        {
+            "Name": "BgmBoss",
+            "Path": "Library/sound/BGMBoss.wav",
+            "Volume": 160
+        },
+        {
+            "Name": "BgmGame",
+            "Path": "Library/sound/BGMGame.mp3",
+            "Volume": 160
+        },
+        {
+            "Name": "BgmClear",
+            "Path": "Library/sound/GameClear.mp3",
+            "Volume": 180
+        }
+    ]
+}

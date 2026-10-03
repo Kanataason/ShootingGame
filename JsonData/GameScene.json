@@ -1,0 +1,85 @@
+{
+    "objects": [
+        {
+            "Name": "Player",
+            "Status": {
+                "CharacterType": "Player",
+                "Health": 20
+            },
+            "AttackType": [ 1001, 1002 ],
+            "Transform": {
+                "Position": [ 300, 500, 0 ],
+                "Rotation": 10
+            },
+            "Radius": 10
+        },
+        {
+            "Name": "Enemy",
+            "Status": {
+                "CharacterType": "MoveEnemy",
+                "IsMove": 1,
+                "Health": 60
+            },
+            "AttackType": [ 2001 ],
+            "Transform": {
+                "Position": [ 300, -100, 0 ],
+                "Rotation": 40
+            },
+            "Radius": 35
+        }
+    ],
+    "ShotData": {
+        "Shots": [
+            {
+                "Id": 1001,
+                "Name": "PlayerLong",
+                "Count": 0,
+                "Damage": 1,
+                "Speed": 600,
+                "Life": 3,
+                "Length": 10,
+                "Thickness": 3
+            },
+            {
+                "Id": 1002,
+                "Name": "PlayerSpread",
+                "Count": 10,
+                "Damage": 0.5,
+                "Speed": 800,
+                "Life": 0.4,
+                "Length": 6,
+                "Thickness": 4
+            },
+            {
+                "Id": 2001,
+                "Name": "EnemyAim",
+                "Count": 0,
+                "Damage": 1,
+                "Speed": 600,
+                "Life": 3,
+                "Length": 10,
+                "Thickness": 3
+            },
+            {
+                "Id": 2002,
+                "Name": "EnemyFan",
+                "Count": 10,
+                "Damage": 1,
+                "Speed": 400,
+                "Life": 5,
+                "Length": 20,
+                "Thickness": 3
+            },
+            {
+                "Id": 2003,
+                "Name": "EnemySpread",
+                "Count": 20,
+                "Damage": 1,
+                "Speed": 400,
+                "Life": 3,
+                "Length": 5,
+                "Thickness": 3
+            }
+        ]
+    }
+}

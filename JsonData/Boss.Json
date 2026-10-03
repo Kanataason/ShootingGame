@@ -1,0 +1,18 @@
+{
+    "Boss":[
+        {
+         "Name": "Boss",
+            "Status": {
+                "CharacterType": "Boss",
+                "IsMove": 1,
+                "Health": 1
+            },
+            "AttackType": [2001, 2002, 2003, 2004],
+            "Transform": {
+                "Position": [ 320, -100, 0 ],
+                "Rotation": 0
+            },
+            "HalfSize": [ 50, 50 ]
+        }
+    ]
+}

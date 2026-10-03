@@ -1,0 +1,20 @@
+{
+      "Scenes": [
+        {
+            "SceneName": "Title",
+            "SceneDataPath": "JsonData/Title.json"
+        },
+        {
+            "SceneName": "GameScene",
+            "SceneDataPath": "JsonData/GameScene.json"
+        },
+        {
+            "SceneName": "Clear",
+            "SceneDataPath": "JsonData/Title.json"
+        },
+        {
+            "SceneName": "Result",
+            "SceneDataPath": "JsonData/Result.json"
+        }
+  ]
+}

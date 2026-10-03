@@ -1,0 +1,50 @@
+{
+    "Templates": [
+        {
+            "Name": "Enemy",
+            "Status": {
+                "CharacterType": "MoveEnemy",
+                "IsMove": 1,
+                "Health": 3,
+                "MovePattern": "PassThrough"
+            },
+            "AttackType": [ 2001 ],
+            "Transform": {
+                "Position": [ 0, -100, 0 ],
+                "Rotation": 0
+            },
+            "Radius": 15
+        },
+        {
+            "Name": "Enemy",
+            "Status": {
+                "CharacterType": "SpreadEnemy",
+                "IsMove": 1,
+                "Health": 5,
+                "MovePattern": "PassThrough"
+            },
+            "AttackType": [ 2003 ],
+            "Transform": {
+                "Position": [ 0, -100, 0 ],
+                "Rotation": 0
+            },
+            "HalfSize": [ 15, 15 ]
+        },
+        {
+            "Name": "Enemy",
+            "RandomX": true,
+            "Status": {
+                "CharacterType": "ReflectShotEnemy",
+                "IsMove": 0,
+                "Health": 8,
+                "MovePattern": "PassThrough"
+            },
+            "AttackType": [ 2002 ],
+            "Transform": {
+                "Position": [ 570, -100, 0 ],
+                "Rotation": 0
+            },
+            "HalfSize": [ 20, 20 ]
+        }
+    ]
+}
