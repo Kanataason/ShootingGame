@@ -45,6 +45,7 @@ namespace
 		{ "EnterAndStay", MovePattern::EnterAndStay },
 		{ "PassThrough",  MovePattern::PassThrough  },
 	};
+	//音のデータ
 	const  std::unordered_map<std::string, SoundId> soundTable =
 	{
 		{"PlayerShot",SoundId::PlayerShot},
