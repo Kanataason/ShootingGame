@@ -285,6 +285,9 @@ StatusData JsonLoader::LoadStatusData(const json& root)const
 	if (root.contains("MovePattern"))
 		data.movePattern = ToMovePattern(root.at("MovePattern").get<std::string>());
 
+	if(root.contains("ImagePath"))
+		data.imagePath = root.at("ImagePath").get<std::string>();
+
 	return data;
 }
 

@@ -108,10 +108,9 @@ void BossController::Draw()
 
 void BossController::DrawBody() const
 {
-	auto min = _shape->GetMin();
-	auto max = _shape->GetMax();
-	DrawBox(static_cast<int>(min.x), static_cast<int>(min.y),
-		static_cast<int>(max.x), static_cast<int>(max.y), 0xAA00FF, TRUE);
+	//座標が画像の中心になる。画像は表示する大きさと向きに加工済みなので、等倍・回転なしで描く
+	const auto& pos = GetOwner()->GetTransform().Position;
+	DrawRotaGraph((int)pos.x, (int)pos.y, 1.0, 0.0, _status->GetImagePath(), TRUE);
 }
 
 

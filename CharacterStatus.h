@@ -26,6 +26,9 @@ public:
 	void SetIsActive(bool isActive) { _isActive = isActive; }
 	bool GetIsActive()const { return _isActive; }
 
+	void SetImagePath(int path) { _imagePath = path; }
+	int GetImagePath() const { return _imagePath; }
+
 	virtual void OnDead() {};
 protected:
 	void ApplyDamage(float damage) 
@@ -43,5 +46,7 @@ protected:
 	float _maxHealth = 0;
 	float _health = 0;
 	
+	int _imagePath = 0;
+
 	CharacterType _characterState = CharacterType::None;
 };

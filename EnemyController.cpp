@@ -83,34 +83,8 @@ void EnemyController::DrawBody() const
 {
 	if (_status->GetIsActive())
 	{
-		switch (_status->GetCharacterType())
-		{
-		case CharacterType::MoveEnemy:
-		{
-			auto& pos = GetOwner()->GetTransform().Position;
-			DrawCircle(static_cast<int>(pos.x), static_cast<int>(pos.y),
-				static_cast<int>(_sizeStatus->GetRadius()), 0x0000FF);
-			break;
-		}
-		case CharacterType::ReflectShotEnemy:
-		{
-			auto min = _sizeStatus->GetMin();
-			auto max = _sizeStatus->GetMax();
-			float centerX = (min.x + max.x) * 0.5f;
-			DrawTriangle(static_cast<int>(min.x), static_cast<int>(min.y),//左上
-				static_cast<int>(max.x), static_cast<int>(min.y),//右上
-				static_cast<int>(centerX), static_cast<int>(max.y),//下の頂点
-				0xFFAA00, TRUE);
-			break;
-		}
-		case CharacterType::SpreadEnemy:
-		{
-			auto min = _sizeStatus->GetMin();
-			auto max = _sizeStatus->GetMax();
-			DrawBox(static_cast<int>(min.x), static_cast<int>(min.y),
-				static_cast<int>(max.x), static_cast<int>(max.y), 0xFF0000, TRUE);
-			break;
-		}
-		}
+		const auto& pos = GetOwner()->GetTransform().Position;
+		//座標が画像の中心になる。画像は表示する大きさと向きに加工済みなので、等倍・回転なしで描く
+		DrawRotaGraph((int)pos.x, (int)pos.y, 1.0, 0.0, _status->GetImagePath(), TRUE);
 	}
 }

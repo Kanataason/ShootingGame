@@ -6,14 +6,15 @@
                 "CharacterType": "MoveEnemy",
                 "IsMove": 1,
                 "Health": 3,
-                "MovePattern": "PassThrough"
+                "MovePattern": "PassThrough",
+                "ImagePath": "Library/image/Enemy3.png"
             },
             "AttackType": [ 2001 ],
             "Transform": {
                 "Position": [ 0, -100, 0 ],
                 "Rotation": 0
             },
-            "Radius": 15
+            "Radius": 25
         },
         {
             "Name": "Enemy",
@@ -21,14 +22,15 @@
                 "CharacterType": "SpreadEnemy",
                 "IsMove": 1,
                 "Health": 5,
-                "MovePattern": "PassThrough"
+                "MovePattern": "PassThrough",
+                "ImagePath": "Library/image/Enemy1.png"
             },
             "AttackType": [ 2003 ],
             "Transform": {
                 "Position": [ 0, -100, 0 ],
                 "Rotation": 0
             },
-            "HalfSize": [ 15, 15 ]
+            "HalfSize": [ 30, 20 ]
         },
         {
             "Name": "Enemy",
@@ -37,14 +39,15 @@
                 "CharacterType": "ReflectShotEnemy",
                 "IsMove": 0,
                 "Health": 8,
-                "MovePattern": "PassThrough"
+                "MovePattern": "PassThrough",
+                "ImagePath": "Library/image/Enemy2.png"
             },
             "AttackType": [ 2002 ],
             "Transform": {
                 "Position": [ 570, -100, 0 ],
                 "Rotation": 0
             },
-            "HalfSize": [ 20, 20 ]
+            "HalfSize": [ 30, 18 ]
         }
     ]
 }

@@ -4,28 +4,30 @@
             "Name": "Player",
             "Status": {
                 "CharacterType": "Player",
-                "Health": 20
+                "Health": 20,
+                "ImagePath": "Library/image/Player.png"
             },
             "AttackType": [ 1001, 1002 ],
             "Transform": {
                 "Position": [ 300, 500, 0 ],
                 "Rotation": 10
             },
-            "Radius": 10
+            "Radius": 20
         },
         {
             "Name": "Enemy",
             "Status": {
                 "CharacterType": "MoveEnemy",
                 "IsMove": 1,
-                "Health": 60
+                "Health": 60,
+                "ImagePath": "Library/image/Enemy3.png"
             },
             "AttackType": [ 2001 ],
             "Transform": {
                 "Position": [ 300, -100, 0 ],
                 "Rotation": 40
             },
-            "Radius": 35
+            "Radius": 25
         }
     ],
     "ShotData": {

@@ -81,6 +81,7 @@ void GameObjectFactory::BuildEnemy(GameObject& gameObject, const ObjectData& obj
 	status->SetMoveFlag(objectData.statusData.isMove);
 	status->SetCharacterType(objectData.statusData.characterType);
 	status->SetMovePattern(objectData.statusData.movePattern);
+	status->SetImagePath(LoadGraph(objectData.statusData.imagePath.c_str()));
 
 	SetShapeData(gameObject, objectData, Team::Enemy);
 }
@@ -97,6 +98,7 @@ void GameObjectFactory::BuildPlayer(GameObject& gameObject, const ObjectData& ob
 	auto status = gameObject.AddComponent<PlayerStatus>();
 	status->SetHealth(objectData.statusData.health);
 	status->SetCharacterType(objectData.statusData.characterType);
+	status->SetImagePath(LoadGraph(objectData.statusData.imagePath.c_str()));
 
 	SetShapeData(gameObject, objectData, Team::Player);
 	_locator.playerProvider->SetPlayer(&gameObject);
@@ -113,6 +115,7 @@ void GameObjectFactory::BuildBoss(GameObject& gameObject, const ObjectData& obje
 	auto status = gameObject.AddComponent<EnemyStatus>();
 	status->SetHealth(objectData.statusData.health);
 	status->SetCharacterType(objectData.statusData.characterType);
+	status->SetImagePath(LoadGraph(objectData.statusData.imagePath.c_str()));
 
 	SetShapeData(gameObject, objectData,Team::Enemy);
 }

@@ -85,6 +85,7 @@ struct StatusData
 	CharacterType characterType = CharacterType::None;
 	MovePattern movePattern = MovePattern::EnterAndStay;
 
+	std::string imagePath = "";
 	bool isMove = true;
 	float health = 0;
 };

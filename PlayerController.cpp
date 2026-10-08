@@ -88,7 +88,8 @@ void PlayerController::DrawBody() const
 	if (!_status->GetIsActive())return;
 
 	const auto& pos = GetOwner()->GetTransform().Position;
-	DrawCircle((int)pos.x, (int)pos.y, (int)_sizeStatus->GetRadius(), 0x00FFFF);
+	//座標が画像の中心になる。画像は表示する大きさに加工済みなので、等倍で描く
+	DrawRotaGraph((int)pos.x, (int)pos.y, 1.0, 0.0, _status->GetImagePath(), TRUE);
 }
 void PlayerController::MoveByInput(float deltaTime, float moveSpeed)
 {
