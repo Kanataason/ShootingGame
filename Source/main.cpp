@@ -2,7 +2,7 @@
 #include <algorithm>
 
 #include "GameManager.h"
-#include "Time.h"
+#include "GameTime.h"
 namespace
 {
 	constexpr int GameWidth = 640;
@@ -25,6 +25,10 @@ namespace
 }
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR plCmdLine, int nCmdShow)
 {
+#ifdef NDEBUG
+	//Releaseのときだけ、DxLibがLog.txtを書き出さないようにする。開発中は読み込み失敗などの原因を見るために残す
+	SetOutApplicationLogValidFlag(FALSE);
+#endif
 	ChangeWindowMode(TRUE);
 	SetGraphMode(GameWidth, GameHeight, 32);
 	SetWindowSizeExtendRate(CalcWindowExtendRate());

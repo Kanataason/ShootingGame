@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -85,6 +85,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dxlib\Library</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)JsonData" "$(OutDir)JsonData"
+xcopy /E /I /Y "$(ProjectDir)Library\image" "$(OutDir)Library\image"
+xcopy /E /I /Y "$(ProjectDir)Library\Sound" "$(OutDir)Library\Sound"</Command>
+      <Message>JsonData・画像・音をexeの横にコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,7 +100,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -103,6 +109,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dxlib\Library</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)JsonData" "$(OutDir)JsonData"
+xcopy /E /I /Y "$(ProjectDir)Library\image" "$(OutDir)Library\image"
+xcopy /E /I /Y "$(ProjectDir)Library\Sound" "$(OutDir)Library\Sound"</Command>
+      <Message>JsonData・画像・音をexeの横にコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -110,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -119,6 +131,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dxlib\Library</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)JsonData" "$(OutDir)JsonData"
+xcopy /E /I /Y "$(ProjectDir)Library\image" "$(OutDir)Library\image"
+xcopy /E /I /Y "$(ProjectDir)Library\Sound" "$(OutDir)Library\Sound"</Command>
+      <Message>JsonData・画像・音をexeの横にコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -128,7 +146,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Dxlib\Library;$(ProjectDir)Library</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -137,93 +155,99 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dxlib\Library</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)JsonData" "$(OutDir)JsonData"
+xcopy /E /I /Y "$(ProjectDir)Library\image" "$(OutDir)Library\image"
+xcopy /E /I /Y "$(ProjectDir)Library\Sound" "$(OutDir)Library\Sound"</Command>
+      <Message>JsonData・画像・音をexeの横にコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BossController.cpp" />
-    <ClCompile Include="BossStates.cpp" />
-    <ClCompile Include="BulletManager.cpp" />
-    <ClCompile Include="ColliderManager.cpp" />
-    <ClCompile Include="EnemyAttack.cpp" />
-    <ClCompile Include="EnemyController.cpp" />
-    <ClCompile Include="EnemyMovement.cpp" />
-    <ClCompile Include="EnemyStates.cpp" />
-    <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameObjectFactory.cpp" />
-    <ClCompile Include="GameResult.cpp" />
-    <ClCompile Include="GameHUD.cpp" />
-    <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="JsonLoader.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ModelManager.cpp" />
-    <ClCompile Include="PlayerAttack.cpp" />
-    <ClCompile Include="PlayerController.cpp" />
-    <ClCompile Include="PlayerMovement.cpp" />
-    <ClCompile Include="PlayerStates.cpp" />
-    <ClCompile Include="SceneLoader.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="SoundManager.cpp" />
-    <ClCompile Include="Title.cpp" />
+    <ClCompile Include="Source\BossController.cpp" />
+    <ClCompile Include="Source\BossStates.cpp" />
+    <ClCompile Include="Source\BulletManager.cpp" />
+    <ClCompile Include="Source\ColliderManager.cpp" />
+    <ClCompile Include="Source\EnemyAttack.cpp" />
+    <ClCompile Include="Source\EnemyController.cpp" />
+    <ClCompile Include="Source\EnemyMovement.cpp" />
+    <ClCompile Include="Source\EnemyStates.cpp" />
+    <ClCompile Include="Source\GameManager.cpp" />
+    <ClCompile Include="Source\GameObject.cpp" />
+    <ClCompile Include="Source\GameObjectFactory.cpp" />
+    <ClCompile Include="Source\GameResult.cpp" />
+    <ClCompile Include="Source\GameHUD.cpp" />
+    <ClCompile Include="Source\GameScene.cpp" />
+    <ClCompile Include="Source\InputManager.cpp" />
+    <ClCompile Include="Source\JsonLoader.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\ModelManager.cpp" />
+    <ClCompile Include="Source\PlayerAttack.cpp" />
+    <ClCompile Include="Source\PlayerController.cpp" />
+    <ClCompile Include="Source\PlayerMovement.cpp" />
+    <ClCompile Include="Source\PlayerStates.cpp" />
+    <ClCompile Include="Source\SceneLoader.cpp" />
+    <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\SoundManager.cpp" />
+    <ClCompile Include="Source\Title.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BackgroundScroller.h" />
-    <ClInclude Include="BossController.h" />
-    <ClInclude Include="BossStates.h" />
-    <ClInclude Include="DrawManager.h" />
-    <ClInclude Include="EnemyCommonStates.h" />
-    <ClInclude Include="SoundManager.h" />
-    <ClInclude Include="TimedState.h" />
-    <ClInclude Include="BaseScene.h" />
-    <ClInclude Include="BoxCollider.h" />
-    <ClInclude Include="Bullet.h" />
-    <ClInclude Include="BulletManager.h" />
-    <ClInclude Include="CharacterStatus.h" />
-    <ClInclude Include="CircleCollider.h" />
-    <ClInclude Include="Collider.h" />
-    <ClInclude Include="ColliderManager.h" />
-    <ClInclude Include="ColliderRegistry.h" />
-    <ClInclude Include="Collision.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="EffectUtillity.h" />
-    <ClInclude Include="EnemyAttack.h" />
-    <ClInclude Include="EnemyController.h" />
-    <ClInclude Include="EnemyMovement.h" />
-    <ClInclude Include="EnemySpawner.h" />
-    <ClInclude Include="EnemyStates.h" />
-    <ClInclude Include="EnemyStatus.h" />
-    <ClInclude Include="Event.h" />
-    <ClInclude Include="GameHUD.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObjectfactory.h" />
-    <ClInclude Include="GameProgress.h" />
-    <ClInclude Include="GameResult.h" />
-    <ClInclude Include="GameScene.h" />
-    <ClInclude Include="GameTitle.h" />
-    <ClInclude Include="GameWindow.h" />
-    <ClInclude Include="GunData.h" />
-    <ClInclude Include="GunState.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="JsonLoader.h" />
+    <ClInclude Include="Include\BackgroundScroller.h" />
+    <ClInclude Include="Include\BossController.h" />
+    <ClInclude Include="Include\BossStates.h" />
+    <ClInclude Include="Include\DrawManager.h" />
+    <ClInclude Include="Include\EnemyCommonStates.h" />
+    <ClInclude Include="Include\SoundManager.h" />
+    <ClInclude Include="Include\TimedState.h" />
+    <ClInclude Include="Include\BaseScene.h" />
+    <ClInclude Include="Include\BoxCollider.h" />
+    <ClInclude Include="Include\Bullet.h" />
+    <ClInclude Include="Include\BulletManager.h" />
+    <ClInclude Include="Include\CharacterStatus.h" />
+    <ClInclude Include="Include\CircleCollider.h" />
+    <ClInclude Include="Include\Collider.h" />
+    <ClInclude Include="Include\ColliderManager.h" />
+    <ClInclude Include="Include\ColliderRegistry.h" />
+    <ClInclude Include="Include\Collision.h" />
+    <ClInclude Include="Include\Component.h" />
+    <ClInclude Include="Include\EffectUtillity.h" />
+    <ClInclude Include="Include\EnemyAttack.h" />
+    <ClInclude Include="Include\EnemyController.h" />
+    <ClInclude Include="Include\EnemyMovement.h" />
+    <ClInclude Include="Include\EnemySpawner.h" />
+    <ClInclude Include="Include\EnemyStates.h" />
+    <ClInclude Include="Include\EnemyStatus.h" />
+    <ClInclude Include="Include\Event.h" />
+    <ClInclude Include="Include\GameHUD.h" />
+    <ClInclude Include="Include\GameManager.h" />
+    <ClInclude Include="Include\GameObject.h" />
+    <ClInclude Include="Include\GameObjectfactory.h" />
+    <ClInclude Include="Include\GameProgress.h" />
+    <ClInclude Include="Include\GameResult.h" />
+    <ClInclude Include="Include\GameScene.h" />
+    <ClInclude Include="Include\GameTitle.h" />
+    <ClInclude Include="Include\GameWindow.h" />
+    <ClInclude Include="Include\GunData.h" />
+    <ClInclude Include="Include\GunState.h" />
+    <ClInclude Include="Include\InputManager.h" />
+    <ClInclude Include="Include\JsonLoader.h" />
     <ClInclude Include="Library\json.hpp" />
-    <ClInclude Include="ModelManager.h" />
-    <ClInclude Include="ObjectPool.h" />
-    <ClInclude Include="PlayerAttack.h" />
-    <ClInclude Include="PlayerController.h" />
-    <ClInclude Include="PlayerMovement.h" />
-    <ClInclude Include="PlayerProvider.h" />
-    <ClInclude Include="PlayerStates.h" />
-    <ClInclude Include="PlayerStatus.h" />
-    <ClInclude Include="Primitive.h" />
-    <ClInclude Include="SceneLoader.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Datas.h" />
-    <ClInclude Include="ServiceLocator.h" />
-    <ClInclude Include="StateMachine.h" />
-    <ClInclude Include="Time.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Include\ModelManager.h" />
+    <ClInclude Include="Include\ObjectPool.h" />
+    <ClInclude Include="Include\PlayerAttack.h" />
+    <ClInclude Include="Include\PlayerController.h" />
+    <ClInclude Include="Include\PlayerMovement.h" />
+    <ClInclude Include="Include\PlayerProvider.h" />
+    <ClInclude Include="Include\PlayerStates.h" />
+    <ClInclude Include="Include\PlayerStatus.h" />
+    <ClInclude Include="Include\Primitive.h" />
+    <ClInclude Include="Include\SceneLoader.h" />
+    <ClInclude Include="Include\SceneManager.h" />
+    <ClInclude Include="Include\Datas.h" />
+    <ClInclude Include="Include\ServiceLocator.h" />
+    <ClInclude Include="Include\StateMachine.h" />
+    <ClInclude Include="Include\GameTime.h" />
+    <ClInclude Include="Include\Transform.h" />
+    <ClInclude Include="Include\Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
