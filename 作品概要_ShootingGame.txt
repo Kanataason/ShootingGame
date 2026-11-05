@@ -1,0 +1,195 @@
+﻿
+SHOOTING GAME　作品概要
+--------------------------------------------------
+
+作品名　　：SHOOTING GAME
+ジャンル　：2D 縦スクロールシューティング
+GitHub　　：https://github.com/Kanataason/ShootingGame
+プレイ動画：https://youtu.be/eP0z0dTtabU
+
+--------------------------------------------------
+1．制作期間
+
+・制作期間　　　　　：2026年9月26日 ～ 2026年10月1日（1週間、個人制作）
+・リファクタリング期間：2026年10月3日 ～ 2026年10月20日（個人）
+
+--------------------------------------------------
+2．動作環境
+
+■ 実行環境
+・OS　　：Windows 10 / 11（64bit）
+・入力　：キーボード、マウス
+・画面　：画面の大きさに合わせて、ウィンドウの大きさが自動で決まります。
+　　　　　ウィンドウの端をドラッグして、大きさを変えることもできます。
+
+■ 開発環境
+・C++20
+・DxLib 3.24f
+・Visual Studio 2022（プラットフォームツールセット v143、x64）
+・Windows 11
+
+■ 動作確認
+・ノートPC（Core i7-13620H / Windows 11 / 1920×1080）
+
+■ 起動方法
+「ShootingGame.exe」をダブルクリックしてください。
+exe と同じフォルダに、「JsonData」「Library\image」「Library\Sound」が必要です。
+終了は ESC キーで行えます。
+
+■ ビルド方法
+「ShootingGame.sln」を Visual Studio 2022 で開き、構成を x64 の Debug か Release にしてビルドしてください。
+DxLib と nlohmann/json はリポジトリに入っているので、別に入れる必要はありません。
+（x86 用の DxLib は入っていないので、x86 ではビルドできません。）
+
+■ 操作方法
+・移動　　　　　：W / A / S / D
+・撃つ　　　　　：マウスの左ボタン（押している間、撃ち続ける）
+・武器の切り替え：マウスの右ボタン
+・決定　　　　　：スペース（タイトル、結果画面）
+・終了　　　　　：ESC
+
+--------------------------------------------------
+3．自身の制作箇所とファイル名
+
+■ 担当箇所
+個人制作のため、プログラムはすべて自分で担当しました。
+・ゲームの基盤（コンポーネント、ステートマシン、シーン管理、描画管理）
+・プレイヤー、雑魚敵、ボスの行動
+・当たり判定（弾と円・四角形の判定、コライダー同士の押し戻し）
+・弾のオブジェクトプール
+・JSON によるデータの読み込み
+・HUD、サウンドの管理
+
+■ 制作したファイル（Source / Include 以下）
+
+基盤
+　main.cpp / GameManager / GameObject / Component / GameObjectFactory /
+　ServiceLocator.h / StateMachine.h / TimedState.h / Event.h / ObjectPool.h /
+　GameTime.h / GameWindow.h / Transform.h / Vector2.h / Primitive.h
+
+シーン
+　SceneManager / SceneLoader / BaseScene.h / Title（GameTitle.h）/ GameScene / GameResult /
+　GameProgress.h / EnemySpawner.h
+
+プレイヤー
+　PlayerController / PlayerStates / PlayerMovement / PlayerAttack / PlayerStatus.h /
+　PlayerProvider.h / GunState.h / GunData.h
+
+敵・ボス
+　EnemyController / EnemyStates / EnemyCommonStates.h / EnemyMovement / EnemyAttack /
+　EnemyStatus.h / BossController / BossStates / CharacterStatus.h
+
+当たり判定・弾
+　Collider.h / CircleCollider.h / BoxCollider.h / Collision.h / ColliderManager /
+　ColliderRegistry.h / Bullet.h / BulletManager
+
+管理・その他
+　DrawManager.h / InputManager / SoundManager / ModelManager / JsonLoader / Datas.h /
+　GameHUD / BackgroundScroller.h / EffectUtillity.h
+
+
+
+--------------------------------------------------
+4．配布されたプログラムを使用した場合、一から自身で作成した箇所
+
+配布されたプログラムは使用していません。
+StateMachine.h は、チーム制作「Knock Out」で作成した StateMachine.cs（下記の動画を参考に作成）を、
+C++ に書き直したものです。それ以外のソースコードは、DxLib と nlohmann/json を除いて、一から自身で作成しました。
+StateMachineの参考動画
+ https://www.youtube.com/watch?v=PbtJt5tnnI8
+
+--------------------------------------------------
+5．参考にした情報・使用したライブラリ
+
+■ ライブラリ
+・DxLib 3.24f（描画、入力、サウンド）
+　https://dxlib.xsrv.jp/
+・nlohmann/json 3.12.0（JSON の読み込み、MIT License）
+　https://github.com/nlohmann/json
+
+■ 素材
+・画像（プレイヤー、敵、ボス、背景）：生成AIで作成
+・効果音、BGM：効果音ラボ様
+
+■ 生成AI
+・画像（プレイヤー、敵、ボス、背景）の作成に使用しました。
+・コードレビューやリファクタリングなど
+
+■ 参考にした書籍・Webページ
+
+StateMachine:
+https://www.youtube.com/watch?v=PbtJt5tnnI8
+
+--------------------------------------------------
+6．アピールポイント
+
+■ ゲーム部分
+コンセプトは「撃つ・止めるの判断が生まれるシューティング」です。
+
+・ヒートゲージ
+　撃つたびにヒートが溜まり、撃たずにいると冷えます。最大まで溜まるとオーバーヒートし、
+　0 まで冷えるまで撃てなくなります。押しっぱなしが一番強い状態にならないようにしています。
+・2種類の武器
+　真上に連射する「ロングショット」と、前方に複数の弾をばらまく「拡散ショット」を、
+　右クリックで切り替えられます。
+・攻撃の違う3種類の雑魚敵
+　プレイヤーを狙って撃つ敵、全方位に弾をばらまく敵、壁で跳ね返る弾を扇状に撃つ敵がいます。
+・二段階のボス
+　雑魚敵を5体倒すとボスが出現します。ボスは HP が 4 割を切ると、無敵の時間をはさんで
+　第二形態に移り、移動が速くなり、渦巻き弾が加わります。
+
+■ プログラム部分
+ゲームエンジンを使わず、C++ と DxLib で基盤から自作しています。
+
+1．コンポーネント指向のゲームオブジェクト
+　GameObject に Movement、Attack、Status、Controller、Collider などのコンポーネントを
+　組み合わせて、プレイヤーや敵を作っています。オブジェクトの組み立ては GameObjectFactory が
+　名前ごとの関数テーブルで呼び分けるので、新しい種類を足すときに既存の処理を変えずに済みます。
+　（GameObject.h、Component.h、GameObjectFactory.cpp）
+
+2．イベント ID で切り替える汎用ステートマシン
+　持ち主の型をテンプレートで受け取るステートマシンを作り、プレイヤー、雑魚敵、ボスの行動を
+　状態ごとのクラスに分けています。死亡のように「どの状態からでも」起きる遷移は AnyState から
+　登録します。共通の処理は基底クラスにまとめ、継承先は違う部分だけを書いています。
+　　- TimedState：一定時間たったら次へ移る（無敵時間、撃破演出）
+　　- RandomMoveXState：左右のランダムな位置へ移動し続ける
+　　- ShotState：一定間隔で撃つ。継承先は撃ち方だけを書く
+　（StateMachine.h、TimedState.h、EnemyCommonStates.h、BossStates.h）
+
+3．フリーリストを使ったオブジェクトプール
+　弾 512 発分のメモリを最初に確保し、空きスロットをリストでつないで管理しています。
+　取り出しと返却が一定時間で終わり、撃つたびのメモリの確保と解放がありません。
+　配置 new で確保済みのメモリにオブジェクトを作り、返却時はデストラクタだけを呼びます。
+　二重の返却や、別のプールのオブジェクトの返却は assert で検出します。
+　その結果、弾が数百発出るボス戦でも、144FPS（モニターの上限）を下回らずに動いています。
+　（ObjectPool.h、BulletManager.cpp）
+
+4．太さを持った線分による弾の当たり判定
+　弾を「太さを持った線分」として扱い、円とは最近点との距離、四角形とはスラブ法で判定しています。
+　速い弾でも、すり抜けにくくなっています。コライダー同士の押し戻しは、形の組み合わせ
+　（円と円、四角形と円、四角形と四角形）ごとの関数テーブルで呼び分け、逆向きの組み合わせも
+　同じ表で処理します。
+　（Collision.h、ColliderManager.cpp）
+
+5．JSON によるデータ駆動
+　シーンの構成、雑魚敵のテンプレート（HP、攻撃、画像、当たり判定）、ボス、効果音と BGM を
+　JSON で定義し、ビルドし直さずに調整できるようにしています。
+　（JsonLoader.cpp、JsonData フォルダ）
+
+6．ゲームの処理と UI の分離
+　HP やヒートの変化は Event（Observer パターン）で HUD に通知し、ゲームの処理が UI を
+　直接触らないようにしています。描画は登録だけを行い、フレームの最後にレイヤーの順
+　（背景 → 敵 → プレイヤー → 弾 → エフェクト → UI）でまとめて描きます。
+　（Event.h、GameHUD.cpp、DrawManager.h）
+
+7．安全なシーン切り替え
+　シーンの切り替えは予約だけを行い、次のフレームの最初に実行します。処理の途中で
+　シーンが消えることがありません。切り替えるたびに JSON から作り直すので、リトライで
+　必ず最初の状態に戻ります。
+　（SceneManager.cpp）
+
+8．その他
+　・deltaTime に上限を付け、ウィンドウ操作などで処理が止まった直後に弾や敵がワープしないようにしています
+　・ウィンドウの大きさを、画面のタスクバーを除いた広さに合わせて自動で決めています
+　・JSON の読み込み失敗などの例外を捕まえ、原因をメッセージボックスで表示してから終了します
+　・各クラスが使うサービスを ServiceLocator にまとめ、グローバル変数を使わずに受け渡しています

@@ -338,5 +338,8 @@
     <ClInclude Include="Include\SoundManager.h">
       <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerBuff.h">
+      <Filter>ヘッダー ファイル\Character\Player</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

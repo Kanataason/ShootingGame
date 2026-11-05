@@ -248,6 +248,7 @@ xcopy /E /I /Y "$(ProjectDir)Library\Sound" "$(OutDir)Library\Sound"</Command>
     <ClInclude Include="Include\GameTime.h" />
     <ClInclude Include="Include\Transform.h" />
     <ClInclude Include="Include\Vector2.h" />
+    <ClInclude Include="PlayerBuff.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

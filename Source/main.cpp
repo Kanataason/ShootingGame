@@ -39,6 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR plCmdLine,
 	SetDrawScreen(DX_SCREEN_BACK);
 	SetMouseDispFlag(FALSE);
 
+
 	//JSONの読み込み失敗などの例外を捕まえて、原因を表示してから終了する
 	try
 	{

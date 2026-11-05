@@ -74,6 +74,8 @@ void PlayerController::Update(float deltaTime)
 		_attackState.Dispatch(AttackEvent::EventAttackStop); 
 	}
 
+
+
 	_currentInput = ReadInput();
 	_normalState.Update(deltaTime);
 	_attackState.Update(deltaTime);
@@ -113,6 +115,19 @@ PlayerInput PlayerController::ReadInput()const
 	input.isShotHeld = _input->GetKey(shotKey);
 	input.isChangePressed = _input->GetKeyDown(changeKey);
 
+	input.commandList = ReadInputCommand();
+
+	return input;
+}
+
+InputCommand PlayerController::ReadInputCommand()const
+{
+	InputCommand input;
+
+	if (_input->GetKeyDown(leftArrowKey))input.commands.push_back(InputKeyName::left);
+	if (_input->GetKeyDown(rightArrowKey))input.commands.push_back(InputKeyName::right);
+	if (_input->GetKeyDown(upArrowKey))input.commands.push_back(InputKeyName::up);
+	if (_input->GetKeyDown(downArrowKey))input.commands.push_back(InputKeyName::down);
 
 	return input;
 }

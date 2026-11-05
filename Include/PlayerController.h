@@ -19,6 +19,12 @@ namespace InputKey
 	constexpr int downKey = 'S';
 	constexpr int leftKey = 'A';
 	constexpr int rightKey = 'D';
+
+	constexpr int leftArrowKey = VK_LEFT;
+	constexpr int rightArrowKey = VK_RIGHT;
+	constexpr int upArrowKey = VK_UP;
+	constexpr int downArrowKey = VK_DOWN;
+
 	constexpr int shotKey = VK_LBUTTON;
 	constexpr int changeKey = VK_RBUTTON;
 }
@@ -45,6 +51,7 @@ public:
 
 	//一フレームの入力を構造体に入れてStateMachineから値を取得できる状態にする
 	PlayerInput ReadInput()const;
+	InputCommand ReadInputCommand() const;
 
 	const PlayerInput& GetCurrentInput()const { return _currentInput; }
     PlayerMovement* GetMovement()const { return _movement; }

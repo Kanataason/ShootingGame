@@ -3,13 +3,30 @@
 #include "Vector2.h"
 #include "ServiceLocator.h"
 #include "GameWindow.h"
+#include <vector>
 
+enum class InputKeyName
+{
+	up =1,
+	down = -1,
+	left = -2,
+	right = 2,
+	none = 0
+};
+
+struct InputCommand
+{
+	std::vector<InputKeyName> commands;
+};
 struct PlayerInput
 {
 	Vector2 direction;
 	bool isShotHeld = false;//押している間ずっと撃つ
 	bool isChangePressed = false; //押した瞬間だけ
+
+	InputCommand commandList;
 };
+
 
 class InputManager
 {
