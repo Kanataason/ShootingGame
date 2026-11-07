@@ -9,6 +9,8 @@
 class PlayerMovement;
 class PlayerAttack;
 class PlayerStatus;
+class PlayerBuff;
+class PlayerCommand;
 class CircleShape;
 class Collider;
 class DrawManager;
@@ -25,8 +27,8 @@ namespace InputKey
 	constexpr int upArrowKey = VK_UP;
 	constexpr int downArrowKey = VK_DOWN;
 
-	constexpr int shotKey = VK_LBUTTON;
-	constexpr int changeKey = VK_RBUTTON;
+	constexpr int shotKey = VK_RETURN;
+	constexpr int changeKey = 'R';
 }
 
 
@@ -37,10 +39,10 @@ public:
 	{
 		return std::make_unique<PlayerController>(*this);
 	}
-	PlayerController() :_normalState(*this), _attackState(*this) {}
+	PlayerController() :_normalState(*this), _attackState(*this), _commandState(*this) {}
 
 	PlayerController(const PlayerController& source)
-		: Component(source),_normalState(*this),_attackState(*this)
+		: Component(source),_normalState(*this),_attackState(*this),_commandState(*this)
 	{
 	}
 
@@ -54,9 +56,13 @@ public:
 	InputCommand ReadInputCommand() const;
 
 	const PlayerInput& GetCurrentInput()const { return _currentInput; }
+	//このフレームに移動の入力があるか。攻撃＋速度のコンボは移動中だけ効く
+	bool IsMoving()const { return _currentInput.direction.x != 0.0f || _currentInput.direction.y != 0.0f; }
     PlayerMovement* GetMovement()const { return _movement; }
 	PlayerAttack* GetAttack()const { return _attack; }
 	PlayerStatus* GetStatus()const { return _status; }
+	PlayerBuff* GetBuff()const { return _buff; }
+	PlayerCommand* GetCommand()const { return _command; }
 	Collider* GetCollider() const { return _collider; }
 	SoundManager* GetSoundManager()const { return _soundManager; }
 
@@ -71,8 +77,14 @@ public:
 private:
 	void SubScribeEvents();
 	void InitializeStateMachine();
+	//一番段階が高い強化の色。同じ段階なら先のタイプ。強化が無ければ-1
+	//攻撃＋速度のコンボ中は、2色を交互に返す
+	int GetBodyColor() const;
+	//回復した直後だけ、広がる緑の輪を描く
+	void DrawHealEffect() const;
 private:
 	bool _isDead = false;
+	float _healEffectStartTime = -100.0f;//始まった直後に出ないよう、ずっと前にしておく
 
 	PlayerInput _currentInput{};
 
@@ -80,6 +92,8 @@ private:
 	PlayerMovement* _movement = nullptr;
 	PlayerAttack* _attack = nullptr;
 	PlayerStatus* _status = nullptr;
+	PlayerBuff* _buff = nullptr;
+	PlayerCommand* _command = nullptr;
 	CircleShape* _sizeStatus = nullptr;
 	Collider* _collider = nullptr;
 	
@@ -89,4 +103,5 @@ private:
 
 	StateMachine<PlayerController> _normalState;
 	StateMachine<PlayerController> _attackState;
+	StateMachine<PlayerController> _commandState;
 };

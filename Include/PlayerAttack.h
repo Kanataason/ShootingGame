@@ -12,6 +12,7 @@
 
 class BulletManager;
 class PlayerStatus;
+class PlayerBuff;
 
 //プレイヤーの弾の撃ち方を担当する
 //いつ撃つかはPlayerStatesが決め、ここは「どう撃つか」だけを持つ
@@ -29,10 +30,11 @@ public :
 
 	void InitializeShotSetting(int type);
 
+	//isMovingは移動中か。攻撃＋速度のコンボの追加ダメージに使う
 	//真上に1発撃つ
-	void LongShot();
+	void LongShot(bool isMoving);
 	//真上から左右20度の範囲に、ランダムな向きで複数撃つ
-	void SpreadShot();
+	void SpreadShot(bool isMoving);
 
 	//Jsonで宣言した配列のindexを設定する
 	void SetCurrentAttackIndex(size_t index)
@@ -68,6 +70,8 @@ public :
 private:
 	//メンバ変数の角度内でランダムに撃つ
 	Vector2 GetRandomDirection()const;
+	//攻撃の強化とコンボを掛けた、今撃つ弾の性能
+	ShotSetting GetBuffedShotData(bool isMoving)const;
 private:
 	float _heat = 0.0f;
 	float _maxHeat = 100.0f;//最大ヒート
@@ -75,6 +79,7 @@ private:
 	bool _isOverheated = false;
 
 	BulletManager* _bulletManager = nullptr;
+	PlayerBuff* _buff = nullptr;
 
 	ShotSetting _currentShotData{};
 

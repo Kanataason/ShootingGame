@@ -182,6 +182,8 @@ xcopy /E /I /Y "$(ProjectDir)Library\Sound" "$(OutDir)Library\Sound"</Command>
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\ModelManager.cpp" />
     <ClCompile Include="Source\PlayerAttack.cpp" />
+    <ClCompile Include="Source\PlayerBuff.cpp" />
+    <ClCompile Include="Source\PlayerCommand.cpp" />
     <ClCompile Include="Source\PlayerController.cpp" />
     <ClCompile Include="Source\PlayerMovement.cpp" />
     <ClCompile Include="Source\PlayerStates.cpp" />
@@ -248,7 +250,8 @@ xcopy /E /I /Y "$(ProjectDir)Library\Sound" "$(OutDir)Library\Sound"</Command>
     <ClInclude Include="Include\GameTime.h" />
     <ClInclude Include="Include\Transform.h" />
     <ClInclude Include="Include\Vector2.h" />
-    <ClInclude Include="PlayerBuff.h" />
+    <ClInclude Include="Include\PlayerBuff.h" />
+    <ClInclude Include="Include\PlayerCommand.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

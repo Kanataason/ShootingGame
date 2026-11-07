@@ -4,6 +4,8 @@
 #include "PlayerMovement.h"
 #include "PlayerAttack.h"
 #include "PlayerStatus.h"
+#include "PlayerBuff.h"
+#include "PlayerCommand.h"
 #include "PlayerProvider.h"
 
 #include "EnemyController.h"
@@ -99,6 +101,9 @@ void GameObjectFactory::BuildPlayer(GameObject& gameObject, const ObjectData& ob
 	status->SetHealth(objectData.statusData.health);
 	status->SetCharacterType(objectData.statusData.characterType);
 	status->SetImagePath(LoadGraph(objectData.statusData.imagePath.c_str()));
+
+	gameObject.AddComponent<PlayerBuff>();
+	gameObject.AddComponent<PlayerCommand>();
 
 	SetShapeData(gameObject, objectData, Team::Player);
 	_locator.playerProvider->SetPlayer(&gameObject);

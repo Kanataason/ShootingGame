@@ -26,6 +26,13 @@ namespace PlayerStates
         EventSpreadShot,
         EventAttackStop,
     };
+    enum CommandEvent
+    {
+        EventCommandOffer,
+        EventCommandStart,
+        EventCommandEnd,
+        EventCommandStop,
+    };
 
     //通常状態：入力で移動する
     class AliveState : public PlayerStateBase
@@ -109,4 +116,40 @@ namespace PlayerStates
     };
 
     class AttackDisabledState : public PlayerStateBase {};
+
+    //コマンドの待機：一定時間たったら、強化の候補を出して選択待ちへ移る
+    //入る時に、前のコマンドの表示を消す
+    class CommandIdleState : public TimedState<PlayerController>
+    {
+    public:
+        CommandIdleState() : TimedState(OfferInterval) {}
+    protected:
+        void OnEnter(State* previousState) override;
+        void OnTimeUp() override;
+    private:
+        static constexpr float OfferInterval = 5.0f;//前のコマンドが終わってから、次の候補を出すまでの秒数
+    };
+
+    //コマンドの選択待ち：候補の1文字目が打たれたら、その候補の入力中へ移る
+    //見送ってもペナルティは無く、時間切れで待機へ戻る
+    class CommandOfferState : public PlayerStateBase
+    {
+    protected:
+        void OnUpdate(float deltaTime) override;
+    };
+
+    //コマンドの入力中：方向キーを判定し、成功したら強化を付けて待機へ戻る。時間切れも待機へ戻る
+    //入力中も移動と射撃はできる。別のステートマシンで動いているため
+    class CommandInputState : public PlayerStateBase
+    {
+    protected:
+        void OnUpdate(float deltaTime) override;
+    };
+
+    //死亡後：コマンドを出さない。入る時に表示を消す
+    class CommandDisabledState : public PlayerStateBase
+    {
+    protected:
+        void OnEnter(State* previousState) override;
+    };
 }

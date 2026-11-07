@@ -100,6 +100,7 @@ namespace EnemyStates
 		LongRangeShotState() : ShotState(0, 0.5f) {}
 	protected:
 		void Shoot(EnemyAttack& attack)override { attack.LongRangeShot(); }
+		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetLongRangeDirections(); }
 	};
 	class ReflectShotState : public ShotState<EnemyController>
 	{
@@ -107,6 +108,7 @@ namespace EnemyStates
 		ReflectShotState() : ShotState(0, 2.0f) {}
 	protected:
 		void Shoot(EnemyAttack& attack)override { attack.ReflectShot(); }
+		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetReflectDirections(); }
 	};
 	class SpreadShotState : public ShotState<EnemyController>
 	{
@@ -114,6 +116,7 @@ namespace EnemyStates
 		SpreadShotState() : ShotState(0, 2.0f) {}
 	protected:
 		void Shoot(EnemyAttack& attack)override { attack.SpreadShot(); }
+		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetSpreadDirections(); }
 	};
 	class LaserState : public EnemyStateBase, public GunState
 	{

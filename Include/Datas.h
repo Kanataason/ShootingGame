@@ -105,4 +105,12 @@ struct SpawnData
 	ObjectData objectData;   //敵そのものの情報
 	bool isRandomX = true;   //出現のルール
 	int maxCount = -1;       //-1 = 無制限
+	int firstWave = 1;       //このウェーブから出始める
+};
+//1ウェーブ分の長さと、雑魚が出る間隔（秒）
+struct WaveData
+{
+	float duration = 40.0f;
+	float minInterval = 2.0f;
+	float maxInterval = 3.5f;
 };

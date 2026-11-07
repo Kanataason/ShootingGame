@@ -24,6 +24,8 @@ public:
 	SceneData LoadScenes(const json& root)const;
 	ObjectData LoadSceneData(const json& root)const;
 	std::vector<SpawnData> LoadSpawnData(const std::string& path) const;
+	//ウェーブの並びを読み込む。Wavesが無ければ、既定値のウェーブを1つだけ返す
+	std::vector<WaveData> LoadWaveData(const std::string& path) const;
 
 	//ボス1体分のデータを読み込む
 	ObjectData LoadBossData(const std::string& path) const;

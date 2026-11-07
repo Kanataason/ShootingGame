@@ -98,6 +98,7 @@ namespace BossStates
 		LongRangeShotState() : ShotState(0, 0.4f) {}
 	protected:
 		void Shoot(EnemyAttack& attack)override { attack.LongRangeShot(); }
+		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetLongRangeDirections(); }
 	};
 	class ReflectShotState : public ShotState<BossController>
 	{
@@ -105,6 +106,7 @@ namespace BossStates
 		ReflectShotState() : ShotState(1, 1.2f) {}
 	protected:
 		void Shoot(EnemyAttack& attack)override { attack.ReflectShot(); }
+		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetReflectDirections(); }
 	};
 	class SpreadShotState : public ShotState<BossController>
 	{
@@ -112,6 +114,7 @@ namespace BossStates
 		SpreadShotState() : ShotState(2, 1.0f) {}
 	protected:
 		void Shoot(EnemyAttack& attack)override { attack.SpreadShot(); }
+		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetSpreadDirections(); }
 	};
 
 	//撃つたびに角度を少しずつ回して、渦巻きに見せる
@@ -122,6 +125,7 @@ namespace BossStates
 	protected:
 		void OnEnter(State* prevState)override;
 		void Shoot(EnemyAttack& attack)override;
+		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetSwirlDirections(_angle); }
 	private:
 		float _rotateStep = 24.0f;     //1回撃つごとに回す角度
 		float _angle = 0.0f;

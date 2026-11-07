@@ -76,6 +76,7 @@ void EnemyController::Draw()
 {
 	//本体と撃破エフェクトは、別のレイヤーに登録する
 	_drawManager->Register(DrawLayer::Enemy, [this] { DrawBody(); });
+	_drawManager->Register(DrawLayer::Enemy, [this] { _attackState.Draw(); });//攻撃予告。本体の上、弾の下に描く
 	_drawManager->Register(DrawLayer::Effect, [this] { _normalState.Draw(); });
 }
 

@@ -4,6 +4,7 @@
 #define NOMINMAX
 
 #include <algorithm>
+#include <cmath>
 
 #include <DxLib.h>
 #include "Vector2.h"
@@ -33,4 +34,24 @@ public:
 		}
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
     }
+
+	//強化中のオーラ：段階が高いほど濃く太くなり、脈打つ
+	//timeは経過時間。Time::GetWorldTime()を渡す
+	static void DrawAura(const Vector2& center, float radius, int color, int level, float time)
+	{
+		//0から1を行ったり来たりする値
+		float pulse = 0.5f + 0.5f * std::sin(time * AuraPulseSpeed);
+		int alpha = AuraBaseAlpha + level * AuraAlphaPerLevel + static_cast<int>(pulse * AuraPulseAlpha);
+
+		SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);//加算で光って見せる
+		DrawCircle((int)center.x, (int)center.y, (int)(radius + pulse * AuraPulseRadius), color, FALSE, level + 1);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+
+private:
+	static constexpr float AuraPulseSpeed = 10.0f; //脈打つ速さ。約1秒で1回
+	static constexpr int AuraBaseAlpha = 60;      //一番薄いときの濃さ
+	static constexpr int AuraAlphaPerLevel = 40;  //段階が1つ上がるごとに濃くする量
+	static constexpr int AuraPulseAlpha = 40;     //脈打つときの濃さの幅
+	static constexpr float AuraPulseRadius = 5.0f;//脈打つときの半径の幅（ピクセル）
 };

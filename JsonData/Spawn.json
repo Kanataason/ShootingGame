@@ -1,7 +1,13 @@
 {
+    "Waves": [
+        { "Duration": 40, "MinInterval": 2.0, "MaxInterval": 3.5 },
+        { "Duration": 50, "MinInterval": 1.5, "MaxInterval": 2.8 },
+        { "Duration": 60, "MinInterval": 1.0, "MaxInterval": 2.0 }
+    ],
     "Templates": [
         {
             "Name": "Enemy",
+            "FirstWave": 1,
             "Status": {
                 "CharacterType": "MoveEnemy",
                 "IsMove": 1,
@@ -18,6 +24,7 @@
         },
         {
             "Name": "Enemy",
+            "FirstWave": 3,
             "Status": {
                 "CharacterType": "SpreadEnemy",
                 "IsMove": 1,
@@ -35,6 +42,7 @@
         {
             "Name": "Enemy",
             "RandomX": true,
+            "FirstWave": 2,
             "Status": {
                 "CharacterType": "ReflectShotEnemy",
                 "IsMove": 0,

@@ -134,8 +134,30 @@ std::vector<SpawnData> JsonLoader::LoadSpawnData(const std::string& path) const
 		data.objectData = LoadSceneData(templateRoot);
 		data.isRandomX = templateRoot.value("RandomX", true);
 		data.maxCount = templateRoot.value("MaxCount", -1);
+		data.firstWave = templateRoot.value("FirstWave", 1);
 		result.push_back(std::move(data));
 	}
+	return result;
+}
+
+std::vector<WaveData> JsonLoader::LoadWaveData(const std::string& path) const
+{
+	const json root = LoadJsonData(path);
+
+	std::vector<WaveData> result;
+	if (root.contains("Waves"))
+	{
+		for (const auto& waveRoot : root.at("Waves"))
+		{
+			WaveData data;
+			data.duration = waveRoot.value("Duration", data.duration);
+			data.minInterval = waveRoot.value("MinInterval", data.minInterval);
+			data.maxInterval = waveRoot.value("MaxInterval", data.maxInterval);
+			result.push_back(data);
+		}
+	}
+	//ウェーブが1つも無いと進行できないので、既定値を1つ入れる
+	if (result.empty()) result.push_back(WaveData{});
 	return result;
 }
 

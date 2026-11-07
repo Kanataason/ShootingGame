@@ -104,6 +104,7 @@ void BossController::Draw()
 {
 	//本体・点滅・撃破エフェクトの描き分けはステートが行う
 	_drawManager->Register(DrawLayer::Enemy, [this] { _normalState.Draw(); });
+	_drawManager->Register(DrawLayer::Enemy, [this] { _attackState.Draw(); });//攻撃予告。本体の上、弾の下に描く
 }
 
 void BossController::DrawBody() const

@@ -117,6 +117,12 @@
     <ClCompile Include="Source\GameObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PlayerBuff.cpp">
+      <Filter>ソース ファイル\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlayerCommand.cpp">
+      <Filter>ソース ファイル\Character\Player</Filter>
+    </ClCompile>
     <ClCompile Include="Source\PlayerController.cpp">
       <Filter>ソース ファイル\Character\Player</Filter>
     </ClCompile>
@@ -338,7 +344,10 @@
     <ClInclude Include="Include\SoundManager.h">
       <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerBuff.h">
+    <ClInclude Include="Include\PlayerBuff.h">
+      <Filter>ヘッダー ファイル\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\PlayerCommand.h">
       <Filter>ヘッダー ファイル\Character\Player</Filter>
     </ClInclude>
   </ItemGroup>
