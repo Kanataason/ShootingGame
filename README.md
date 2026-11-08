@@ -172,7 +172,7 @@ ShootingGame/
 - ライブラリ: [DxLib](https://dxlib.xsrv.jp/)、[nlohmann/json](https://github.com/nlohmann/json)
 - 開発環境: Visual Studio 2022
 - 制作期間: 1 週間(2026 年 9 月 26 日 〜 10 月 1 日)
-- 追加開発(コマンド、強化、攻撃予告、ウェーブ): 2026 年 (要記入) 〜 11 月 (要記入)
+- 追加開発(コマンド、強化、攻撃予告、ウェーブ): 2026年11月4日～2026年11月6日
 - 制作人数: 1 人
 
 ## 素材
