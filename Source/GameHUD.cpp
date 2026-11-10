@@ -1,6 +1,7 @@
 ﻿#include "GameHUD.h"
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <DxLib.h>
 
 #include "GameWindow.h"
@@ -28,6 +29,12 @@ namespace
 	constexpr int CommandNextColor = 0xFFFF00;
 	constexpr int OfferTimeColor = 0xAAAAAA;//候補が消えるまでの時間
 	constexpr int InputTimeColor = 0x00CCFF;//入力し終えるまでの時間
+	constexpr int CommandBarWidth = 150;
+
+	//コマンドの後ろに敷く板
+	constexpr int CommandBackColor = 0x000000;
+	constexpr int CommandBackAlpha = 170;
+	constexpr int CommandBackPadding = 6;
 
 	constexpr int BuffX = 480;
 	constexpr int BuffY = 380;//4種類とコンボの5行が、画面の下に収まる高さ
@@ -144,38 +151,61 @@ void GameHUD::DrawCommandResult()const
 		: (_result == CommandResult::Missed) ? 0xFF4444
 		: 0xAAAAAA;
 
-	//だんだん消える
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * (1.0f - elapsed / _resultShowTime)));
-	DrawStringToHandle(CommandX, CommandY - 28, text, color, DX_DEFAULT_FONT_HANDLE);
+	//だんだん消える。後ろの板も一緒に消す
+	const float fade = 1.0f - elapsed / _resultShowTime;
+	const int y = CommandY - 28;
+	const int width = GetDrawStringWidth(text, static_cast<int>(strlen(text)));
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(CommandBackAlpha * fade));
+	DrawBox(CommandX - CommandBackPadding, y - CommandBackPadding / 2,
+		CommandX + width + CommandBackPadding, y + GetFontSize() + CommandBackPadding / 2, CommandBackColor, TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * fade));
+	DrawStringToHandle(CommandX, y, text, color, DX_DEFAULT_FONT_HANDLE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 }
 
 void GameHUD::DrawCommand() const
 {
-	int lineCount = 0;
-	int timeColor = TextColor;
+	if (_command.phase == CommandPhase::None) return;
+	const bool isOffer = (_command.phase == CommandPhase::Offer);
 
-	switch (_command.phase)
+	//板の大きさを決めるために、行数と一番長い方向列を数える
+	const int lineCount = isOffer ? static_cast<int>(_command.candidates.size()) : 1;
+	size_t longest = _command.sequence.size();
+	if (isOffer)
 	{
-	case CommandPhase::Offer:
-		//どの候補も、選ぶために打つ1文字目を黄色で出す
 		for (const auto& candidate : _command.candidates)
-			DrawCommandLine(CommandY + lineCount++ * CommandLineHeight, candidate.type, candidate.sequence, 0);
-		timeColor = OfferTimeColor;
-		break;
-	case CommandPhase::Input:
+			longest = (std::max)(longest, candidate.sequence.size());
+	}
+	DrawCommandBack(lineCount, longest);
+
+	if (isOffer)
+	{
+		//どの候補も、選ぶために打つ1文字目を黄色で出す
+		int line = 0;
+		for (const auto& candidate : _command.candidates)
+			DrawCommandLine(CommandY + line++ * CommandLineHeight, candidate.type, candidate.sequence, 0);
+	}
+	else
+	{
 		DrawCommandLine(CommandY, _command.type, _command.sequence, _command.progress);
-		lineCount = 1;
-		timeColor = InputTimeColor;
-		break;
-	default:
-		return;
 	}
 
 	//残り時間。ラベルは強化の名前で出しているので空にする
-	DrawBar(CommandX, CommandY + lineCount * CommandLineHeight, 150,
-		ToRatio(_command.remaining, _command.timeLimit), timeColor, "");
+	DrawBar(CommandX, CommandY + lineCount * CommandLineHeight, CommandBarWidth,
+		ToRatio(_command.remaining, _command.timeLimit), isOffer ? OfferTimeColor : InputTimeColor, "");
+}
+
+void GameHUD::DrawCommandBack(int lineCount, size_t longest)
+{
+	//敵が後ろを通っても文字が読めるように、半透明の黒い板を敷く
+	const int width = (std::max)(CommandNameWidth + static_cast<int>(longest) * CommandSpacing, CommandBarWidth);
+	const int height = lineCount * CommandLineHeight + BarHeight;
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, CommandBackAlpha);
+	DrawBox(CommandX - CommandBackPadding, CommandY - CommandBackPadding,
+		CommandX + width + CommandBackPadding, CommandY + height + CommandBackPadding, CommandBackColor, TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void GameHUD::DrawCommandLine(int y, BuffType type, const std::vector<InputKeyName>& sequence, int progress)
