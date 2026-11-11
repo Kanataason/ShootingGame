@@ -20,7 +20,7 @@ namespace
 	//移動速度（ピクセル/秒）。通常時と無敵中で共通
 	constexpr float MoveSpeed = 350.0f;
 
-	//次に上がる強化の段階ごとの、方向の数と制限時間。添字は段階-1
+	//段階ごとの矢印の数と制限時間。[0]が段階1
 	constexpr std::array<int, PlayerBuff::MaxLevel> CommandLengths = { 5, 6,7 };
 	constexpr std::array<float, PlayerBuff::MaxLevel> CommandTimeLimits = { 3.0f, 3.5f, 4.0f };
 
@@ -29,20 +29,20 @@ namespace
 		InputKeyName::up, InputKeyName::down, InputKeyName::left, InputKeyName::right
 	};
 
-	//候補を出してから、選ばれずに消えるまでの秒数
+	//候補が消えるまでの秒数
 	constexpr float OfferTime = 4.0f;
 
-	constexpr float HealAmount = 5.0f;   //回復のコマンド1回で戻すHP
-	constexpr float PinchHpRatio = 0.3f; //HPがこの割合以下だと、回復を必ず候補に入れる
+	constexpr float HealAmount = 5.0f;   //回復量
+	constexpr float PinchHpRatio = 0.3f; //HPがこの割合以下なら回復を必ず出す
 
-	//1回に出す候補の数。強化の種類のうち、毎回ランダムにこの数だけ選んで出す
+	//1回に出す候補の数
 	constexpr size_t OfferCount = 3;
 
-	//候補ごとに1文字目を別の方向にするので、出す候補は方向の数より多くできない
+	//1文字目が被らないように、候補は方向の数まで
 	static_assert(OfferCount <= CommandDirections.size());
 	static_assert(OfferCount <= static_cast<size_t>(BuffType::Count));
 
-	//並びをランダムに入れ替える（Fisher-Yates）
+	//並びをシャッフルする
 	template<class T, size_t Size>
 	void Shuffle(std::array<T, Size>& values)
 	{
@@ -60,9 +60,9 @@ namespace
 		return sequence;
 	}
 
-	//強化の種類からOfferCount個を選び、1つずつ候補を作る
-	//mustHealがtrueなら、回復を必ず候補に入れる
-	//1文字目はタイプごとに別の方向にして、打ち始めでどの候補を選んだか決まるようにする
+	//強化をOfferCount個選んで候補を作る
+	//mustHealなら回復を必ず入れる
+	//1文字目は候補ごとに別の方向にする
 	std::vector<CommandCandidate> MakeCandidates(const PlayerBuff& buff, bool mustHeal)
 	{
 		//タイプをシャッフルして先頭から選ぶ
@@ -71,17 +71,17 @@ namespace
 			types[index] = static_cast<BuffType>(index);
 		Shuffle(types);
 
-		//回復が選ばれる範囲の外にあれば、先頭と入れ替えて選ばれるようにする
+		//回復が選ばれていなければ先頭と入れ替える
 		if (mustHeal)
 		{
 			auto heal = std::find(types.begin(), types.end(), BuffType::Heal);
 			if (heal >= types.begin() + OfferCount) std::iter_swap(types.begin(), heal);
 		}
 
-		//HUDの並びが毎回変わらないよう、選んだものはタイプ順に戻す
+		//HUDの並びをそろえるためにタイプ順に戻す
 		std::sort(types.begin(), types.begin() + OfferCount);
 
-		//方向をシャッフルして、先頭から順に各候補の1文字目に使う
+		//1文字目に使う方向をシャッフル
 		auto firstKeys = CommandDirections;
 		Shuffle(firstKeys);
 
@@ -89,8 +89,8 @@ namespace
 		for (size_t index = 0; index < OfferCount; ++index)
 		{
 			const BuffType type = types[index];
-			//次に上がる段階で、方向の数と時間を決める。最大段階でも、時間を戻すために入力できる
-			//回復は段階を持たないので、いつも段階1の長さになる
+			//次の段階で長さと時間を決める。最大段階でもかけ直せる
+			//回復はいつも段階1の長さ
 			const int nextLevel = (std::min)(buff.GetLevel(type) + 1, PlayerBuff::MaxLevel);
 
 			CommandCandidate candidate;
@@ -103,15 +103,30 @@ namespace
 		return candidates;
 	}
 
-	//HPがこの割合以下なら、回復を必ず候補に入れる
+	//ピンチかどうか
 	bool IsPinch(const PlayerStatus& status)
 	{
 		return status.GetHealth() <= status.GetMaxHealth() * PinchHpRatio;
 	}
 
-	//入力しきったコマンドの効果を出す。回復はその場でHPを戻し、それ以外は強化をかける
+	//強化ごとの成功時の音
+	SoundId GetCommandSound(BuffType type)
+	{
+		switch (type)
+		{
+		case BuffType::Attack:  return SoundId::CommandAttack;
+		case BuffType::Defense: return SoundId::CommandDefense;
+		case BuffType::Speed:   return SoundId::CommandSpeed;
+		case BuffType::Predict: return SoundId::CommandPredict;
+		default:                return SoundId::CommandHeal;
+		}
+	}
+
+	//コマンド成功時の効果。回復だけはその場でHPを戻す
 	void ApplyCommand(PlayerController& controller, BuffType type)
 	{
+		controller.PlaySe(GetCommandSound(type));
+
 		if (type == BuffType::Heal)
 			controller.GetStatus()->Heal(HealAmount);
 		else
@@ -236,9 +251,9 @@ namespace PlayerStates
 
 		for (size_t index = 0; index < keys.size(); ++index)
 		{
-			if (!command->Select(keys[index])) continue;//どの候補の1文字目でもないキーは無視する
+			if (!command->Select(keys[index])) continue;//どの候補でもないキーは無視
 
-			//同じフレームに続けて押されたキーは、選んだ候補の2文字目以降として渡す
+			//同じフレームの残りのキーは2文字目以降として渡す
 			for (size_t rest = index + 1; rest < keys.size(); ++rest)
 			{
 				if (command->Input(keys[rest]) == CommandResult::Completed)

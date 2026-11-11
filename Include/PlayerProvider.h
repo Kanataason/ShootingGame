@@ -7,15 +7,15 @@ class GameObject;
 class PlayerProvider
 {
 public:
-	//リトライ対策として、プレイヤーを設定し直すときに生存状態と予測の段階もリセットする
+	//リトライ対策で、生存状態と予測の段階もリセット
 	void SetPlayer(GameObject* player) { _player = player; _active = true; _predictLevel = 0; }
 	GameObject* GetPlayer() const { return _player; }
 
 	void SetPlayerActive(bool active) { _active = active; }
 	bool GetActive()const { return _active; }
 
-	//プレイヤーにかかっている予測の強化の段階。敵の攻撃予告の強さに使う
-	//敵がプレイヤーの強化を直接見ないように、GameSceneがここへ入れる
+	//予測の段階。敵の予告の強さに使う
+	//GameSceneが入れる
 	void SetPredictLevel(int level) { _predictLevel = level; }
 	int GetPredictLevel() const { return _predictLevel; }
 private:

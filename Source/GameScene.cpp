@@ -90,7 +90,7 @@ void GameScene::SubScribeEvents()
 		playerBuff->OnBuffChanged.Subscribe([this](BuffType type, int level, float remaining)
 			{ _hud.SetBuff(type, level, remaining); });
 
-		//予測の段階は、敵が攻撃予告の強さを決めるのに使う
+		//予測の段階を敵に渡す
 		playerBuff->OnBuffChanged.Subscribe([this](BuffType type, int level, float)
 			{
 				if (type == BuffType::Predict) _locator.playerProvider->SetPredictLevel(level);

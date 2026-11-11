@@ -70,12 +70,9 @@ namespace PlayerStates
 
 
     //攻撃ステートの基底クラス
-    //ボタンを押している間撃ち続け、切り替えボタンで別の攻撃ステートへ移る
-    //入力・クールタイム・ヒート・切り替えはここで行うので、継承先はShootだけ書けばよい
-    //武器を増やすときは、継承したステートを作り、PlayerControllerで切り替えの輪に入れる
-
-    //攻撃ステートの基底クラス
-    //ボタンを押している間撃ち続け、切り替えボタンで別の攻撃ステートへ移る
+    //押している間撃ち続け、切り替えボタンで次の武器へ
+    //入力・クールタイム・ヒート・切り替えはここでやるので、継承先はShootだけ書く
+    //武器を増やしたら、PlayerControllerで切り替えの輪に入れる
     class PlayerShotState : public PlayerStateBase, public GunState
     {
     protected:
@@ -117,7 +114,7 @@ namespace PlayerStates
 
     class AttackDisabledState : public PlayerStateBase {};
 
-    //コマンドの待機：一定時間たったら、強化の候補を出して選択待ちへ移る
+    //コマンドの待機。時間で候補を出す
     //入る時に、前のコマンドの表示を消す
     class CommandIdleState : public TimedState<PlayerController>
     {
@@ -127,19 +124,19 @@ namespace PlayerStates
         void OnEnter(State* previousState) override;
         void OnTimeUp() override;
     private:
-        static constexpr float OfferInterval = 5.0f;//前のコマンドが終わってから、次の候補を出すまでの秒数
+        static constexpr float OfferInterval = 5.0f;//次の候補までの秒数
     };
 
-    //コマンドの選択待ち：候補の1文字目が打たれたら、その候補の入力中へ移る
-    //見送ってもペナルティは無く、時間切れで待機へ戻る
+    //候補の選択待ち。1文字目で入力中へ
+    //見送ってもいい。時間切れで待機へ
     class CommandOfferState : public PlayerStateBase
     {
     protected:
         void OnUpdate(float deltaTime) override;
     };
 
-    //コマンドの入力中：方向キーを判定し、成功したら強化を付けて待機へ戻る。時間切れも待機へ戻る
-    //入力中も移動と射撃はできる。別のステートマシンで動いているため
+    //コマンドの入力中。成功か時間切れで待機へ
+    //別のステートマシンなので、入力中も移動と射撃はできる
     class CommandInputState : public PlayerStateBase
     {
     protected:

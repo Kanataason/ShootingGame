@@ -1,4 +1,5 @@
 ﻿#include <fstream>
+#include <DxLib.h>
 
 #include "JsonLoader.h"
 #include "GameTitle.h"
@@ -8,6 +9,22 @@
 //Jsonで読み込んだ値を変換するテーブルスペース
 namespace
 {
+	//JSONはUTF-8なので、日本語のファイル名はDxLibが読めるShift-JISに直す
+	std::string ToShiftJis(const std::string& utf8)
+	{
+		const int wideLength = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, nullptr, 0);
+		if (wideLength <= 0) return utf8;
+		std::wstring wide(wideLength, L'\0');
+		MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, wide.data(), wideLength);
+
+		const int length = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), -1, nullptr, 0, nullptr, nullptr);
+		if (length <= 0) return utf8;
+		std::string result(length, '\0');
+		WideCharToMultiByte(CP_ACP, 0, wide.c_str(), -1, result.data(), length, nullptr, nullptr);
+		result.pop_back();//最後の'\0'を消す
+		return result;
+	}
+
 	//ScenePathは後で設定するのでここではempty
 	const std::unordered_map<std::string, SceneData> sceneTable =
 	{
@@ -52,6 +69,11 @@ namespace
 		{"PlayerShotGun",SoundId::PlayerShotGun},
 		{"PlayerHit",SoundId::PlayerHit},
 		{"Overheat",    SoundId::Overheat},
+		{"CommandAttack",SoundId::CommandAttack},
+		{"CommandDefense",SoundId::CommandDefense},
+		{"CommandSpeed",SoundId::CommandSpeed},
+		{"CommandPredict",SoundId::CommandPredict},
+		{"CommandHeal",SoundId::CommandHeal},
 		{"CharacterExplosion",SoundId::CharacterExplosion},
 		{"BossExplosion",SoundId::BossExplosion},
 		{"BgmBoss",SoundId::BgmBoss},
@@ -156,7 +178,7 @@ std::vector<WaveData> JsonLoader::LoadWaveData(const std::string& path) const
 			result.push_back(data);
 		}
 	}
-	//ウェーブが1つも無いと進行できないので、既定値を1つ入れる
+	//ウェーブが無いと進まないので1つ入れる
 	if (result.empty()) result.push_back(WaveData{});
 	return result;
 }
@@ -211,7 +233,7 @@ std::vector<SoundData> JsonLoader::LoadSoundData(const json& root)const
 		data.id = ToSoundId(soundRoot.at("Name").get<std::string>());
 
 		if (soundRoot.contains("Path"))
-			data.path = soundRoot.at("Path").get<std::string>();
+			data.path = ToShiftJis(soundRoot.at("Path").get<std::string>());
 
 		data.volume = soundRoot.value("Volume", 255);
 

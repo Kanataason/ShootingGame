@@ -12,15 +12,15 @@
 
 namespace
 {
-	//予測の段階ごとの、撃つ何秒前から予告を出すか。添字は段階で、0は予測なし
+	//予測の段階ごとの予告時間（撃つ何秒前か）。[0]は予測なし
 	constexpr std::array<float, 4> WarnTimes = { 0.3f, 0.5f, 0.7f, 1.0f };
-	//予測の段階ごとの、撃つ方向の線の長さ（ピクセル）。0は線を出さない
+	//予測の段階ごとの線の長さ。0なら線なし
 	constexpr std::array<float, 4> WarnLineLengths = { 0.0f, 120.0f, 240.0f, 480.0f };
 
-	constexpr float WarnRingSpread = 24.0f; //出し始めの輪が、本体からどれだけ外にあるか
+	constexpr float WarnRingSpread = 24.0f; //輪の広がり
 	constexpr int WarnRingAlpha = 160;      //撃つ瞬間の輪の濃さ
 	constexpr int WarnLineBaseAlpha = 60;   //撃つ瞬間の線の濃さ
-	constexpr int WarnLineAlphaPerLevel = 50;//予測の段階が1つ上がるごとに線を濃くする量
+	constexpr int WarnLineAlphaPerLevel = 50;//段階ごとに足す濃さ
 	constexpr float DefaultBodyRadius = 16.0f;//形が取れないときの本体の半径
 }
 
@@ -119,13 +119,12 @@ void EnemyAttack::DrawWarning(const std::vector<Vector2>& directions, float rati
 	const Vector2& center = GetOwner()->GetTransform().Position;
 	const int level = GetPredictLevel();
 
-	//加算で光らせる。撃つ瞬間に近づくほど濃くする
-	//本体に向かって縮んでいく輪。撃つ瞬間に本体の大きさになる
+	//撃つ直前ほど濃くする。輪は本体に向かって縮む
 	const float ringRadius = GetBodyRadius() + (1.0f - ratio) * WarnRingSpread;
 	SetDrawBlendMode(DX_BLENDMODE_ADD, static_cast<int>(ratio * WarnRingAlpha));
 	DrawCircle((int)center.x, (int)center.y, (int)ringRadius, _bulletColor, FALSE, 2);
 
-	//予測中だけ、撃つ方向の線を出す。段階が高いほど長く、濃く、太い
+	//予測中だけ線を出す
 	const float length = WarnLineLengths[level];
 	if (length > 0.0f)
 	{
@@ -158,7 +157,7 @@ void EnemyAttack::FireAll(const std::vector<Vector2>& directions)
 }
 int EnemyAttack::GetPredictLevel() const
 {
-	//表の範囲外を読まないように収める
+	//表の範囲に収める
 	return std::clamp(_provider->GetPredictLevel(), 0, static_cast<int>(WarnTimes.size()) - 1);
 }
 float EnemyAttack::GetBodyRadius() const

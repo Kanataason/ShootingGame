@@ -31,6 +31,36 @@
             "BufferNum": 1
         },
         {
+            "Name": "CommandAttack",
+            "Path": "Library/sound/パワーチャージ.mp3",
+            "Volume": 180,
+            "BufferNum": 1
+        },
+        {
+            "Name": "CommandDefense",
+            "Path": "Library/sound/防御.mp3",
+            "Volume": 180,
+            "BufferNum": 1
+        },
+        {
+            "Name": "CommandSpeed",
+            "Path": "Library/sound/スピード.mp3",
+            "Volume": 180,
+            "BufferNum": 1
+        },
+        {
+            "Name": "CommandPredict",
+            "Path": "Library/sound/索敵.mp3",
+            "Volume": 180,
+            "BufferNum": 1
+        },
+        {
+            "Name": "CommandHeal",
+            "Path": "Library/sound/回復.mp3",
+            "Volume": 180,
+            "BufferNum": 1
+        },
+        {
             "Name": "BgmBoss",
             "Path": "Library/sound/BGMBoss.wav",
             "Volume": 160

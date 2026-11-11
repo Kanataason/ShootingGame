@@ -21,19 +21,19 @@ using namespace InputKey;
 
 namespace
 {
-	//強化中に機体を光らせるときの、脈打つ速さと濃さ
-	constexpr float GlowPulseSpeed = 6.0f;//約1秒で1回脈打つ
-	constexpr int GlowBaseAlpha = 80;     //一番薄いときの濃さ
-	constexpr int GlowPulseAlpha = 80;    //脈打つときの濃さの幅
+	//強化中の機体の光
+	constexpr float GlowPulseSpeed = 6.0f;//約1秒で1回
+	constexpr int GlowBaseAlpha = 80;     //基本の濃さ
+	constexpr int GlowPulseAlpha = 80;    //脈の濃さの幅
 
-	//オーラの半径。強化ごとに少しずつ外にずらして、重ねがけしても輪が重ならないようにする
+	//オーラの半径。強化ごとに外へずらす
 	constexpr float AuraRadius = 26.0f;
 	constexpr float AuraRadiusStep = 7.0f;
 
-	//コンボ中に、攻撃と速度の色を切り替える間隔（秒）
+	//コンボ中の色の切り替え間隔
 	constexpr float ComboBlinkInterval = 0.2f;
 
-	//回復のエフェクトが広がりきって消えるまでの秒数
+	//回復エフェクトの長さ
 	constexpr float HealEffectTime = 0.6f;
 }
 
@@ -58,12 +58,12 @@ void PlayerController::Initialize(ServiceLocator& locator)
 }
 void PlayerController::SubScribeEvents()
 {
-	//OnHealthChangedは回復でも呼ばれるので、無敵にするのはダメージを受けたときだけにする
+	//回復では無敵にしない
 	_status->OnDamaged.Subscribe([this]
 		{
 			if (_status->GetHealth() > 0.0f) _normalState.Dispatch(LifeEvent::EventDamaged);
 		});
-	//回復したら、撃破と同じ広がる輪を緑で出す
+	//回復したら緑の輪を出す
 	_status->OnHealed.Subscribe([this] { _healEffectStartTime = Time::GetWorldTime(); });
 	_status->OnHitSound.Subscribe([this](SoundId id) {PlaySe(id);});
 }
@@ -78,12 +78,12 @@ void PlayerController::InitializeStateMachine()
 
 
 	//武器は切り替えボタンで順番に回る
-    //武器を増やしたら、輪が途切れないように前後の遷移とswitchEventをつなぎ直す
-    //登録が無いイベントはDispatchしても何も起きないので、切り替わらないときはここを見る
+    //武器を増やしたら遷移とswitchEventもつなぎ直す
+    //切り替わらないときは遷移の登録漏れ
 	_attackState.AddTransition<LongRangeShot, SpreadShotState>(AttackEvent::EventSpreadShot);
 	_attackState.AddTransition<SpreadShotState, LongRangeShot>(AttackEvent::EventLongShot);
 
-	//時間で候補を出し、1文字目で選ばれたら入力を始める。成功か時間切れで待機に戻る
+	//コマンド：待機→候補→入力→待機
 	_commandState.AddTransition<CommandIdleState, CommandOfferState>(CommandEvent::EventCommandOffer);
 	_commandState.AddTransition<CommandOfferState, CommandInputState>(CommandEvent::EventCommandStart);
 	_commandState.AddTransition<CommandOfferState, CommandIdleState>(CommandEvent::EventCommandEnd);
@@ -137,7 +137,7 @@ void PlayerController::DrawBody() const
 
 	const auto& pos = GetOwner()->GetTransform().Position;
 
-	//かかっている強化すべてのオーラ。機体の下になるよう先に描く
+	//オーラは機体の下に描く
 	for (size_t index = 0; index < static_cast<size_t>(BuffType::Count); ++index)
 	{
 		const BuffType type = static_cast<BuffType>(index);
@@ -149,28 +149,27 @@ void PlayerController::DrawBody() const
 	//座標が画像の中心になる。画像は表示する大きさに加工済みなので、等倍で描く
 	DrawRotaGraph((int)pos.x, (int)pos.y, 1.0, 0.0, _status->GetImagePath(), TRUE);
 
-	//強化中は、同じ画像を強化の色で加算して重ね、機体を光らせる
+	//強化中は同じ画像を色付きで加算して光らせる
 	const int color = GetBodyColor();
 	if (color == -1) return;
 
-	//0xRRGGBBから、赤・緑・青を取り出す
 	const int red = (color >> 16) & 0xFF;
 	const int green = (color >> 8) & 0xFF;
 	const int blue = color & 0xFF;
 
-	//0から1を行ったり来たりする値
+	//0〜1で脈打つ
 	const float pulse = 0.5f + 0.5f * std::sin(Time::GetWorldTime() * GlowPulseSpeed);
 
 	SetDrawBright(red, green, blue);
 	SetDrawBlendMode(DX_BLENDMODE_ADD, GlowBaseAlpha + static_cast<int>(pulse * GlowPulseAlpha));
 	DrawRotaGraph((int)pos.x, (int)pos.y, 1.0, 0.0, _status->GetImagePath(), TRUE);
-	//戻さないと、この後に描く敵や弾やHUDにも効いてしまう
+	//戻さないと他の描画にも効く
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	SetDrawBright(255, 255, 255);
 }
 int PlayerController::GetBodyColor() const
 {
-	//コンボ中は、攻撃と速度の色を交互に光らせる
+	//コンボ中は赤と黄を交互に
 	if (_buff->IsComboActive())
 	{
 		const bool isAttackTurn = std::fmod(Time::GetWorldTime(), ComboBlinkInterval * 2.0f) < ComboBlinkInterval;

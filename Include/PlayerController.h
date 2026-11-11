@@ -56,7 +56,7 @@ public:
 	InputCommand ReadInputCommand() const;
 
 	const PlayerInput& GetCurrentInput()const { return _currentInput; }
-	//このフレームに移動の入力があるか。攻撃＋速度のコンボは移動中だけ効く
+	//移動中か（コンボ用）
 	bool IsMoving()const { return _currentInput.direction.x != 0.0f || _currentInput.direction.y != 0.0f; }
     PlayerMovement* GetMovement()const { return _movement; }
 	PlayerAttack* GetAttack()const { return _attack; }
@@ -78,13 +78,13 @@ private:
 	void SubScribeEvents();
 	void InitializeStateMachine();
 	//一番段階が高い強化の色。同じ段階なら先のタイプ。強化が無ければ-1
-	//攻撃＋速度のコンボ中は、2色を交互に返す
+	//コンボ中は2色を交互に返す
 	int GetBodyColor() const;
-	//回復した直後だけ、広がる緑の輪を描く
+	//回復エフェクト
 	void DrawHealEffect() const;
 private:
 	bool _isDead = false;
-	float _healEffectStartTime = -100.0f;//始まった直後に出ないよう、ずっと前にしておく
+	float _healEffectStartTime = -100.0f;//最初は表示しない
 
 	PlayerInput _currentInput{};
 

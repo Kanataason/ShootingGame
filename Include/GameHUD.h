@@ -23,7 +23,7 @@ public:
 
 	//今のウェーブと、そのウェーブの残り秒数
 	void SetWave(int wave, int waveCount, float remaining) { _wave = wave; _waveCount = waveCount; _waveRemaining = remaining; }
-	//画面の真ん中に大きな文字を一定時間出す。ウェーブの始まりやボスの登場に使う
+	//画面の真ん中に大きい文字を出す（WAVE、WARNING）
 	void ShowBanner(std::string text, int color) { _banner = std::move(text); _bannerColor = color; _bannerTime = Time::GetWorldTime(); }
 
 	void SetPlayerHp(float hp, float maxHp) { _playerHp = hp; _playerMaxHp = maxHp; }
@@ -41,7 +41,7 @@ private:
 	void DrawPlayerHp() const;
 	//ボスが出ていればHPバー、出ていなければ今のウェーブと残り秒数
 	void DrawBossInfo() const;
-	//ShowBannerの文字。最後のほうでだんだん消える
+	//ShowBannerの文字
 	void DrawBanner() const;
 	//オーバーヒート中は赤、7割以上はオレンジ、通常は黄
 	void DrawHeat() const;
@@ -68,7 +68,7 @@ private:
 
 	std::string _banner;
 	int _bannerColor = 0xFFFFFF;
-	float _bannerTime = -100.0f;//始まった直後に文字が出ないよう、ずっと前にしておく
+	float _bannerTime = -100.0f;//最初は表示しない
 
 	float _playerHp = 0.0f;
 	float _playerMaxHp = 0.0f;
@@ -82,7 +82,7 @@ private:
 	bool _isBossVisible = false;
 
 	CommandResult _result = CommandResult::Progress;
-	float _resultTime = -100.0f;//始まった直後に文字が出ないよう、ずっと前にしておく
+	float _resultTime = -100.0f;//最初は表示しない
 	float _resultShowTime = 2.0f;
 
 	CommandView _command;

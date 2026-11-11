@@ -45,8 +45,8 @@ struct CommandView
 	float timeLimit = 0.0f;
 };
 
-//コマンドの候補と、選ばれた方向列の進み具合を持ち、入力が合っているかを判定する
-//いつ候補を出して、成功したら何をするかはコマンドのステートが決める
+//コマンドの候補と入力の進み具合を持ち、入力を判定する
+//候補を出すタイミングと成功時の処理はステート側
 class PlayerCommand : public Component
 {
 public:
@@ -85,10 +85,10 @@ private:
 	//index番目のお手本。範囲外ならnone
 	InputKeyName Expected(int index) const;
 
-	//同時押しで順番が入れ替わって届いたときに、次のキーを待つ秒数
+	//同時押しで順番が逆になったときの猶予
 	static constexpr float GraceTime = 0.05f;
 
 	CommandView _view;
-	InputKeyName _pendingKey = InputKeyName::none;//お手本と違ったが、猶予中で保留しているキー
+	InputKeyName _pendingKey = InputKeyName::none;//猶予中で保留しているキー
 	float _graceRemaining = 0.0f;
 };

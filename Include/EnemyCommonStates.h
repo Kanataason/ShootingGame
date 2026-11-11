@@ -51,7 +51,7 @@ private:
 
 //JSONのAttackTypeのattackIndex番目の弾を、一定間隔で撃ち続ける
 //撃つ少し前には攻撃予告を出す
-//どう撃つかと、どの方向へ撃つかだけを継承先で決める
+//継承先はShootとGetWarnDirectionsを書く
 //TOwnerに必要なもの：GetAttack()
 template<class TOwner>
 class ShotState : public StateMachine<TOwner>::State, public GunState
@@ -69,7 +69,7 @@ protected:
 		attack->SetCurrentAttackIndex(_attackIndex);
 		attack->InitializeShotSetting(attack->GetAttackType());
 
-		//攻撃が切り替わった最初の1発は遅らせて、予告を見る時間を作る
+		//最初の1発は遅らせて予告を見せる
 		_interval = (std::max)(_shotCoolDown, FirstShotDelay);
 		SetGunState(_interval);
 	}
@@ -85,12 +85,11 @@ protected:
 	}
 	void OnDraw() override
 	{
-		//連射が速すぎるときは、予告が点滅して見づらいので出さない
-		//その場合も、攻撃が切り替わった最初の1発には出る
+		//連射が速いと点滅して見づらいので出さない（最初の1発には出る）
 		if (_interval < MinWarnInterval) return;
 
 		const EnemyAttack& attack = *this->owner().GetAttack();
-		//撃つ間隔のほとんどが予告にならないように、間隔の一部までにする
+		//予告は間隔の一部まで
 		const float warnTime = (std::min)(attack.GetWarnTime(), _interval * MaxWarnRatio);
 		if (_coolDown > warnTime) return;
 
@@ -99,14 +98,14 @@ protected:
 
 	//1回分の撃ち方
 	virtual void Shoot(EnemyAttack& attack) = 0;
-	//次に撃つ弾の方向。攻撃予告に使うので、Shootと同じ方向を返す
+	//次に撃つ方向。Shootと同じものを返す
 	virtual std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack) const = 0;
 private:
-	static constexpr float FirstShotDelay = 0.8f; //攻撃が切り替わってから最初に撃つまでの秒数
+	static constexpr float FirstShotDelay = 0.8f; //最初の1発までの秒数
 	static constexpr float MinWarnInterval = 0.25f;//撃つ間隔がこれより短いと予告を出さない
-	static constexpr float MaxWarnRatio = 0.8f;    //撃つ間隔のうち、予告に使ってよい割合
+	static constexpr float MaxWarnRatio = 0.8f;    //予告に使う割合の上限
 
 	size_t _attackIndex;
 	float _shotCoolDown;
-	float _interval = 0.0f;//前に撃ってから（入った直後は入ってから）次に撃つまでの秒数
+	float _interval = 0.0f;//次に撃つまでの間隔
 };

@@ -35,11 +35,11 @@ public:
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
     }
 
-	//強化中のオーラ：段階が高いほど濃く太くなり、脈打つ
+	//強化中のオーラ。段階が高いほど濃く太い
 	//timeは経過時間。Time::GetWorldTime()を渡す
 	static void DrawAura(const Vector2& center, float radius, int color, int level, float time)
 	{
-		//0から1を行ったり来たりする値
+		//0〜1で脈打つ
 		float pulse = 0.5f + 0.5f * std::sin(time * AuraPulseSpeed);
 		int alpha = AuraBaseAlpha + level * AuraAlphaPerLevel + static_cast<int>(pulse * AuraPulseAlpha);
 
@@ -49,9 +49,9 @@ public:
 	}
 
 private:
-	static constexpr float AuraPulseSpeed = 10.0f; //脈打つ速さ。約1秒で1回
-	static constexpr int AuraBaseAlpha = 60;      //一番薄いときの濃さ
-	static constexpr int AuraAlphaPerLevel = 40;  //段階が1つ上がるごとに濃くする量
-	static constexpr int AuraPulseAlpha = 40;     //脈打つときの濃さの幅
-	static constexpr float AuraPulseRadius = 5.0f;//脈打つときの半径の幅（ピクセル）
+	static constexpr float AuraPulseSpeed = 10.0f; //脈打つ速さ（約0.6秒で1回）
+	static constexpr int AuraBaseAlpha = 60;      //基本の濃さ
+	static constexpr int AuraAlphaPerLevel = 40;  //段階ごとに足す濃さ
+	static constexpr int AuraPulseAlpha = 40;     //脈の濃さの幅
+	static constexpr float AuraPulseRadius = 5.0f;//脈の大きさの幅
 };

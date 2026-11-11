@@ -19,7 +19,7 @@ namespace
 	constexpr float PlayerDangerRatio = 0.3f;
 	constexpr float HeatWarningRatio = 0.7f;
 
-	//コマンドの表示位置と、方向どうしの間隔。候補は1行に1つずつ、強化の名前の右に方向を並べる
+	//コマンドの表示位置と矢印の間隔
 	constexpr int CommandX = 220;
 	constexpr int CommandY = 60;
 	constexpr int CommandNameWidth = 80;
@@ -37,19 +37,19 @@ namespace
 	constexpr int CommandBackPadding = 6;
 
 	constexpr int BuffX = 480;
-	constexpr int BuffY = 380;//4種類とコンボの5行が、画面の下に収まる高さ
+	constexpr int BuffY = 380;//5行分が画面に収まる高さ
 	constexpr int BuffLineHeight = 20;
-	constexpr int ComboColor = 0xFF9922;//攻撃の赤と速度の黄の間
+	constexpr int ComboColor = 0xFF9922;//オレンジ
 
-	//右上の、ウェーブと残り秒数
+	//ウェーブ表示の位置
 	constexpr int WaveInfoX = 440;
 	constexpr int WaveInfoY = 10;
 
-	//画面の真ん中に出す大きな文字
+	//WAVEなどの大きい文字
 	constexpr int BannerY = 180;
-	constexpr double BannerScale = 3.0;   //普通の文字の何倍で描くか
-	constexpr float BannerShowTime = 2.0f;//出している秒数
-	constexpr float BannerFadeTime = 0.5f;//そのうち、最後に消えていく秒数
+	constexpr double BannerScale = 3.0;   //拡大率
+	constexpr float BannerShowTime = 2.0f;//表示時間
+	constexpr float BannerFadeTime = 0.5f;//フェードアウトの時間
 
 	const char* GetBuffName(BuffType type)
 	{
@@ -107,8 +107,8 @@ void GameHUD::DrawBossInfo() const
 		return;
 	}
 
-	//切り上げて、0.5秒残っていれば「1秒」と出す。マイナスにはしない
-	//DxLib経由で入るWindowsのmaxマクロと衝突しないように、かっこで囲む
+	//秒数は切り上げ。マイナスにはしない
+	//maxマクロ対策
 	const int remaining = (std::max)(static_cast<int>(std::ceil(_waveRemaining)), 0);
 	DrawFormatString(WaveInfoX, WaveInfoY, TextColor, "WAVE %d/%d  あと %d 秒", _wave, _waveCount, remaining);
 }
@@ -118,10 +118,10 @@ void GameHUD::DrawBanner() const
 	const float elapsed = Time::GetWorldTime() - _bannerTime;
 	if (_banner.empty() || elapsed >= BannerShowTime) return;
 
-	//最後のBannerFadeTime秒で、だんだん消える
+	//最後にフェードアウト
 	const float fade = (std::min)((BannerShowTime - elapsed) / BannerFadeTime, 1.0f);
 
-	//画面の横の真ん中に来るよう、拡大したあとの幅から左端を決める
+	//拡大後の幅で真ん中にそろえる
 	const int width = static_cast<int>(GetDrawStringWidth(_banner.c_str(), static_cast<int>(_banner.size())) * BannerScale);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * fade));
 	DrawExtendString((_screenWidth - width) / 2, BannerY, BannerScale, BannerScale, _banner.c_str(), _bannerColor);
@@ -169,7 +169,7 @@ void GameHUD::DrawCommand() const
 	if (_command.phase == CommandPhase::None) return;
 	const bool isOffer = (_command.phase == CommandPhase::Offer);
 
-	//板の大きさを決めるために、行数と一番長い方向列を数える
+	//板の大きさ用に、行数と一番長い列を数える
 	const int lineCount = isOffer ? static_cast<int>(_command.candidates.size()) : 1;
 	size_t longest = _command.sequence.size();
 	if (isOffer)
@@ -181,7 +181,7 @@ void GameHUD::DrawCommand() const
 
 	if (isOffer)
 	{
-		//どの候補も、選ぶために打つ1文字目を黄色で出す
+		//1文字目を黄色にする
 		int line = 0;
 		for (const auto& candidate : _command.candidates)
 			DrawCommandLine(CommandY + line++ * CommandLineHeight, candidate.type, candidate.sequence, 0);
@@ -191,14 +191,14 @@ void GameHUD::DrawCommand() const
 		DrawCommandLine(CommandY, _command.type, _command.sequence, _command.progress);
 	}
 
-	//残り時間。ラベルは強化の名前で出しているので空にする
+	//残り時間のバー（ラベルなし）
 	DrawBar(CommandX, CommandY + lineCount * CommandLineHeight, CommandBarWidth,
 		ToRatio(_command.remaining, _command.timeLimit), isOffer ? OfferTimeColor : InputTimeColor, "");
 }
 
 void GameHUD::DrawCommandBack(int lineCount, size_t longest)
 {
-	//敵が後ろを通っても文字が読めるように、半透明の黒い板を敷く
+	//敵と重なっても読めるように半透明の板を敷く
 	const int width = (std::max)(CommandNameWidth + static_cast<int>(longest) * CommandSpacing, CommandBarWidth);
 	const int height = lineCount * CommandLineHeight + BarHeight;
 
@@ -234,7 +234,7 @@ void GameHUD::DrawBuffs() const
 		++line;
 	}
 
-	//攻撃と速度が両方かかっている間は、コンボ中だと出す
+	//攻撃と速度がかかっていればCOMBOを出す
 	const bool isCombo = _buffs[static_cast<size_t>(BuffType::Attack)].level > 0
 		&& _buffs[static_cast<size_t>(BuffType::Speed)].level > 0;
 	if (isCombo)

@@ -28,7 +28,7 @@ bool PlayerCommand::Select(InputKeyName key)
 	{
 		if (candidate.sequence.empty() || candidate.sequence.front() != key) continue;
 
-		//選ばれた候補の方向列に切り替え、時間はこの候補の制限時間で測り直す
+		//選んだ候補に切り替えて、時間も測り直す
 		_view.phase = CommandPhase::Input;
 		_view.type = candidate.type;
 		_view.sequence = candidate.sequence;
@@ -65,7 +65,7 @@ CommandResult PlayerCommand::Judge(InputKeyName key)
 {
 	if (_pendingKey != InputKeyName::none)
 	{
-		//同時押しで順番が逆に届いたときは、今のキーが先、保留したキーが次なら両方正解にする
+		//同時押しで逆順に来たら、入れ替えて両方正解にする
 		bool isSwapped = key == Expected(_view.progress) && _pendingKey == Expected(_view.progress + 1);
 		_pendingKey = InputKeyName::none;
 		if (!isSwapped)
@@ -81,7 +81,7 @@ CommandResult PlayerCommand::Judge(InputKeyName key)
 	}
 	else
 	{
-		//すぐに誤入力にせず、次のキーが猶予内に来るのを待つ
+		//すぐミスにせず、猶予の間は次のキーを待つ
 		_pendingKey = key;
 		_graceRemaining = GraceTime;
 		return CommandResult::Progress;
@@ -98,7 +98,7 @@ CommandResult PlayerCommand::Tick(float deltaTime)
 
 	CommandResult result = CommandResult::Progress;
 
-	//猶予内に次のキーが来なかったので、保留したキーを誤入力にする
+	//猶予切れ。保留したキーをミスにする
 	if (_pendingKey != InputKeyName::none)
 	{
 		_graceRemaining -= deltaTime;

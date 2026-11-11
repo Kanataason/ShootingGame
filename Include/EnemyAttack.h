@@ -11,7 +11,7 @@ class GameWindow;
 class Primitive;
 
 //敵の弾の撃ち方を担当する
-//いつ撃つかはEnemyStatesが決め、ここは「どう撃つか」だけを持つ
+//撃ち方だけを持つ。撃つタイミングはステート側
 class EnemyAttack : public Component
 {
 public:
@@ -32,7 +32,7 @@ public:
 	//baseDegreesを起点に、bulletCount本の腕の方向へ1発ずつ撃つ。角度をずらしながら呼ぶと渦巻きになる
 	void SwirlShot(float baseDegrees);
 
-	//それぞれの撃ち方で、弾が飛ぶ方向の一覧。撃つときと攻撃予告で同じものを使い、予告と実際の弾がずれないようにする
+	//撃つ方向の一覧。撃つときと予告で同じものを使う
 	//撃てないときは空
 	std::vector<Vector2> GetLongRangeDirections() const;
 	std::vector<Vector2> GetReflectDirections() const;
@@ -40,7 +40,7 @@ public:
 	std::vector<Vector2> GetSwirlDirections(float baseDegrees) const;
 
 	//攻撃予告を描く。ratioは0で出し始め、1で撃つ瞬間
-	//本体に縮んでいく輪は常に出し、予測の強化中だけ撃つ方向の線も出す
+	//輪はいつも出す。線は予測中だけ
 	void DrawWarning(const std::vector<Vector2>& directions, float ratio) const;
 	//撃つ何秒前から予告を出すか。予測の段階が高いほど早い
 	float GetWarnTime() const;
@@ -68,7 +68,7 @@ private:
 	Vector2 DirectionFromAngle(float degrees)const;
 	//プレイヤーにかかっている予測の段階
 	int GetPredictLevel() const;
-	//本体のおおよその半径。予告の輪の大きさに使う
+	//本体のだいたいの半径（予告の輪用）
 	float GetBodyRadius() const;
 private:
 	std::vector<int> _attackTypes;

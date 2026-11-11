@@ -17,7 +17,6 @@ struct SpawnEntry
 
 //雑魚敵のランダム出現を担当する
 //一定間隔ごとに、出現できるテンプレートから1つ選んでシーンに追加する
-//いつウェーブを進めるかはGameSceneが決め、SetWaveで知らせる
 class EnemySpawner
 {
 public:
@@ -38,7 +37,7 @@ public:
 		if (_timer > 0.0f) return;
 		ResetTimer();
 
-		//出現間隔がばらつかないように、上限に達したものと、まだ出番のウェーブでないものを候補から外してから選ぶ
+		//出現間隔がばらつかないように、出せないものは先に候補から外す
 		std::vector<SpawnEntry*> candidates;
 		candidates.reserve(_entries.size());
 		for (auto& entry : _entries)
@@ -59,7 +58,7 @@ public:
 	void SetActive(bool isActive) { _isActive = isActive; }
 
 	//ウェーブを切り替える。waveは1から数える
-	//FirstWaveがwave以下の敵だけが出るようになり、出る間隔もウェーブの設定に変わる
+	//FirstWaveがwave以下の敵だけ出す
 	void SetWave(int wave, const WaveData& data)
 	{
 		_wave = wave;
