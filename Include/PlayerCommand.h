@@ -74,7 +74,6 @@ public:
 	CommandResult Tick(float deltaTime);
 
 	BuffType GetType() const { return _view.type; }
-	CommandPhase GetPhase() const { return _view.phase; }
 
 private:
 	//成功時や失敗時に呼んで、HUDに結果を表示させる

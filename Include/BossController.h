@@ -6,7 +6,6 @@
 class EnemyMovement;
 class EnemyAttack;
 class EnemyStatus;
-class Primitive;
 class Collider;
 class DrawManager;
 class SoundManager;
@@ -70,7 +69,6 @@ private:
 	EnemyMovement* _movement = nullptr;
 	EnemyAttack* _attack = nullptr;
 	EnemyStatus* _status = nullptr;
-	Primitive* _shape = nullptr;
 	Collider* _collider = nullptr;
 	const ScreenBounds* _bounds = nullptr;
 	DrawManager* _drawManager = nullptr;

@@ -3,7 +3,6 @@
 #include "EnemyStates.h"
 #include "EnemyMovement.h" 
 #include "EnemyAttack.h"
-#include "GameProgress.h"
 
 #include "GameObject.h"
 #include "GameWindow.h"
@@ -15,13 +14,11 @@ using namespace EnemyStates;
 void EnemyController::Initialize(ServiceLocator& locator)
 {
 	_status = GetOwner()->GetComponent<EnemyStatus>();
-	_sizeStatus = GetOwner()->GetComponent<Primitive>();
 	_movement = GetOwner()->GetComponent<EnemyMovement>();
 	_attack = GetOwner()->GetComponent<EnemyAttack>();
 	_collider = GetOwner()->GetComponent<Collider>();
 
 	_soundManager = locator.soundManager;
-	_progress = locator.progress;
 	_bounds = &locator.gameWindow->GetBounds();
 	_drawManager = locator.drawManager;
 
@@ -33,8 +30,6 @@ void EnemyController::InitializeStateMachine()
 	//遷移先を設定
 	_normalState.AddTransition<EventState, AliveState>(LifeEvent::EventMove);
 	_normalState.AddTransition<EventState, MoveOnceState>(LifeEvent::EventMoveOnce);
-	_normalState.AddTransition<AliveState, InvincibleState>(LifeEvent::EventSecondform);
-	_normalState.AddTransition<InvincibleState, AliveState>(LifeEvent::EventInvincibleEnd);
 	_normalState.AnyAddTransition<DeadState>(LifeEvent::EventDied);
 
 	_attackState.AddTransition<LongRangeShotState, SpreadShotState>(AttackEvent::EventSpreadShot);
@@ -59,7 +54,6 @@ void EnemyController::Update(float deltaTime)
 	{
 		_isDead = true;
 		_collider->SetCollisionEnabled(false);//撃破演出中は当たり判定を無効にする
-		if (_progress) _progress->AddKill();//死んだ数に記録する
 		_normalState.Dispatch(LifeEvent::EventDied);
 		_attackState.Dispatch(AttackEvent::EventAttackStop);
 	}
@@ -67,9 +61,6 @@ void EnemyController::Update(float deltaTime)
 	//ステートマシーンのUpdate更新
 	_normalState.Update(deltaTime);
 	_attackState.Update(deltaTime);
-
-	//ステートマシーンで行った移動処理を反映させる
-	_sizeStatus->SetCenter(GetOwner()->GetTransform().Position);
 }
 
 void EnemyController::Draw()

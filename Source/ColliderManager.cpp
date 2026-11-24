@@ -46,17 +46,21 @@ void ColliderManager::Initialize(ServiceLocator& locator)
 
 void ColliderManager::CheckCollisions(BulletPool& pool)
 {
+    //登録済みのコライダーを取得
     const auto& colliders = _colliderRegistry->GetColliders();
     if (colliders.empty()) { return; }
 
     //弾ごとに当たり判定をチェック
-    pool.ForEachActive([&](Bullet& bullet) {
+    pool.ForEachActive([&](Bullet& bullet)
+        {
+            //弾の先端と後端、太さの半分を計算
         const Vector2& bulletHead = bullet.position;
         const Vector2 bulletTail = bullet.GetTail();
         float halfThickness = bullet.thickness * 0.5f;
 
         for (Collider* targetCollider : colliders)
         {
+            //当たり判定が無効なもの、同じチームには当たらないようにする
             if (!targetCollider->IsCollisionEnabled()) { continue; }
             if (targetCollider->GetTeam() == bullet.ownerTeam) { continue; }
 
@@ -83,6 +87,7 @@ void ColliderManager::CheckCollisions(BulletPool& pool)
             default:break;
             }
 
+			//当たったら、当たった側のOnColliderEnterを呼んで弾を消す
             if (isHit)
             {
                 targetCollider->GetOwner()->OnColliderEnter(bullet.damage);
@@ -111,9 +116,10 @@ void ColliderManager::ResolveCollider()
           
             if (ResolveCollision(*colliderA, *colliderB))
             {
+                float damage = 1.0f;
                 //Playerなら1ダメージを与える
                 Collider* damaged = (colliderA->GetTeam() == Team::Player) ? colliderA : colliderB;
-                damaged->GetOwner()->OnColliderEnter(1);
+                damaged->GetOwner()->OnColliderEnter(damage);
             }
         }
     }

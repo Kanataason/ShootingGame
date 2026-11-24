@@ -17,7 +17,6 @@ void BossController::Initialize(ServiceLocator& locator)
 	_movement = GetOwner()->GetComponent<EnemyMovement>();
 	_attack = GetOwner()->GetComponent<EnemyAttack>();
 	_status = GetOwner()->GetComponent<EnemyStatus>();
-	_shape = GetOwner()->GetComponent<Primitive>();
 	_collider = GetOwner()->GetComponent<Collider>();
 	_bounds = &locator.gameWindow->GetBounds();
 	_drawManager = locator.drawManager;
@@ -78,21 +77,22 @@ void BossController::Update(float deltaTime)
 	UpdateAttackRotation(deltaTime);
 	_normalState.Update(deltaTime);
 	_attackState.Update(deltaTime);
-
-	//ステートマシーンで行った移動処理を反映させる
-	_shape->SetCenter(GetOwner()->GetTransform().Position);
 }
 
 void BossController::UpdateAttackRotation(float deltaTime)
 {
+	//攻撃の切り替えは、攻撃中でかつ攻撃の順番が1種類以上あるときだけ行う
 	if (!_isAttacking || _attackOrder.empty()) return;
 
 	_attackTimer += deltaTime;
 	if (_attackTimer < _attackDuration) return;
 
+	//次の攻撃へ切り替える
 	_attackTimer = 0.0f;
 	if (_attackOrder.size() > 1)
 	{
+		//進める数は1〜(種類の数-1)。1周しないので、今と同じ攻撃は選ばれない
+		//例：3種類なら1か2進むので、今の攻撃以外の2つから選ばれる
 		int step = 1 + GetRand(static_cast<int>(_attackOrder.size()) - 2);
 		_attackOrderIndex = (_attackOrderIndex + step) % _attackOrder.size();
 	}

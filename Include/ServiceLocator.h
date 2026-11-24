@@ -7,12 +7,11 @@ class PlayerProvider;
 class ColliderRegistry;
 class SceneManager;
 class GameObjectFactory;
-class GameProgress;
 class DrawManager;
 class SoundManager;
 
 //各クラスが共通で使うサービスへの参照をまとめたもの
-//実体はGameManagerが持つ。progressだけはGameSceneが持つ
+//実体はGameManagerが持つ
 struct ServiceLocator
 {
 	InputManager* input;
@@ -22,7 +21,6 @@ struct ServiceLocator
 	ColliderRegistry* colliderRegistry;
 	SceneManager* sceneManager;
 	GameObjectFactory* factory;
-	GameProgress* progress;
 	DrawManager* drawManager;
 	SoundManager* soundManager;
 };

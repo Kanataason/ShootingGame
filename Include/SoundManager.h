@@ -10,11 +10,7 @@ public:
 	void PlaySe(SoundId id) const;
 	//今のBGMを止めてから、ループで鳴らす
 	void PlayBgm(SoundId id);
-	void StopBgm() 
-	{
-		if (_currentBgm != -1) StopSoundMem(_currentBgm);
-		_currentBgm = -1;
-	};
+	void StopBgm();
 private:
 	int GetHandle(SoundId id) const { return _handles[static_cast<size_t>(id)]; }
 

@@ -44,7 +44,6 @@ void PlayerController::Initialize(ServiceLocator& locator)
 	_status = GetOwner()->GetComponent<PlayerStatus>();
 	_buff = GetOwner()->GetComponent<PlayerBuff>();
 	_command = GetOwner()->GetComponent<PlayerCommand>();
-	_sizeStatus = GetOwner()->GetComponent<CircleShape>();
 	_collider = GetOwner()->GetComponent<Collider>();
 
 	SubScribeEvents();
@@ -53,7 +52,6 @@ void PlayerController::Initialize(ServiceLocator& locator)
 
 	_soundManager = locator.soundManager;
 	_input = locator.input;
-	_sceneManager = locator.sceneManager;
 	_drawManager = locator.drawManager;
 }
 void PlayerController::SubScribeEvents()

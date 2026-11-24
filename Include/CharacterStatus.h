@@ -22,20 +22,10 @@ public:
 	void SetCharacterType(CharacterType characterState) { _characterState = characterState; }
 	const CharacterType& GetCharacterType()const { return _characterState; }
 
-	void TakeDamage(float damage)
-	{
-		_health -= damage;
-		OnHealthChanged.Invoke(_health, _maxHealth);
-		OnDamaged.Invoke();
-	}
+	//HPを減らして通知する。0以下になっても死亡処理はしない（ApplyDamageで行う）
+	void TakeDamage(float damage);
 	//最大HPまで回復。死んでいたら何もしない
-	void Heal(float amount)
-	{
-		if (!_isActive) return;
-		_health = (_health + amount < _maxHealth) ? _health + amount : _maxHealth;
-		OnHealthChanged.Invoke(_health, _maxHealth);
-		OnHealed.Invoke();
-	}
+	void Heal(float amount);
 
 	void SetIsActive(bool isActive) { _isActive = isActive; }
 	bool GetIsActive()const { return _isActive; }
@@ -45,14 +35,8 @@ public:
 
 	virtual void OnDead() {};
 protected:
-	void ApplyDamage(float damage) 
-	{
-		TakeDamage(damage);
-		if (_health <= 0.0f)
-		{
-			OnDead();
-		}
-	}
+	//ダメージを与え、HPが0以下になったらOnDeadを呼ぶ
+	void ApplyDamage(float damage);
 protected:
 	//死亡フラグ
 	bool _isActive = true;

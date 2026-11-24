@@ -5,19 +5,13 @@
 #include "CharacterStatus.h"
 #include "Primitive.h"
 
-//四角形の中心と半分の大きさを持つ。描画に使う
+//四角形の半分の大きさを持つ。弾を撃つ位置と攻撃予告の輪に使う
 class BoxShape : public Primitive
 {
 public:
 	void SetHalfSize(Vector2 half) {_halfSize = half;}
-	void SetCenter(Vector2 center)override { _center = center; }
-
-	Vector2 GetCenter() const override{ return _center; }
 	Vector2 GetHalfSize() const override{ return _halfSize; }
-	Vector2 GetMin() const override { return _center - _halfSize; }
-	Vector2 GetMax() const override { return _center + _halfSize; }
 private:
-	Vector2 _center;
 	Vector2 _halfSize;
 };
 
@@ -35,19 +29,13 @@ public:
 	void SetMoveFlag(bool isMove) { _isMove = isMove; }
 	bool GetMoveFlag()const { return _isMove; }
 
-	//HPが0になったら非アクティブにするだけ。死亡時の処理はEnemyControllerが行う
-	void OnColliderEnter(float damage)override
-	{
-		if (!GetIsActive()) return;//死亡演出中はダメージを受けない
-		ApplyDamage(damage);
-	}
+	//弾に当たったらダメージを受ける。死亡演出中は受けない
+	void OnColliderEnter(float damage)override;
 	//攻撃のパターンを設定 パターンはGunDataを参照
 	void SetMovePattern(MovePattern pattern) { _pattern = pattern; }
 	MovePattern GetMovePattern() const { return _pattern; }
-	void OnDead()override
-	{
-		SetIsActive(false);
-	}
+	//HPが0になったら非アクティブにするだけ。死亡時の処理はEnemyControllerが行う
+	void OnDead()override;
 
 private:
 	MovePattern _pattern = MovePattern::EnterAndStay;

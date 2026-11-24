@@ -8,6 +8,7 @@
 #include "JsonLoader.h"
 
 #include "PlayerStatus.h"
+#include "PlayerProvider.h"
 #include "PlayerAttack.h"
 #include "PlayerBuff.h"
 #include "PlayerCommand.h"
@@ -17,18 +18,15 @@
 
 void GameScene::Initialize(ServiceLocator& locator)
 {
-	//進行状況はこのシーンだけのものなので、コピーしたlocatorに追加して渡す
-	//SceneManagerが持っている元のlocatorは書き換えない
-	ServiceLocator sceneLocator = locator;
-	sceneLocator.progress = &_progress;
-	BaseScene::Initialize(sceneLocator);
+	BaseScene::Initialize(locator);
 
 	_background.Initialize(_scrollSpeed);
 	JsonLoader loader;
+	//ボスの情報はJsonから読み込んでおき、出現時に使う
 	_bossData = loader.LoadBossData("JsonData/Boss.json");
-	_spawner.Initialize(sceneLocator, loader.LoadSpawnData("JsonData/Spawn.json"));
+	_spawner.Initialize(locator,loader.LoadSpawnData("JsonData/Spawn.json"));
 	_waves = loader.LoadWaveData("JsonData/Spawn.json");
-	_hud.Initialize(sceneLocator);
+	_hud.Initialize(locator);
 
 	locator.soundManager->PlayBgm(SoundId::BgmGame);
 
@@ -48,11 +46,14 @@ void GameScene::UpdateWave(float deltaTime)
 {
 	if (_isBossSpawned) return;
 
+	//ウェーブの経過時間を進める
 	_waveElapsed += deltaTime;
 	const WaveData& wave = _waves[_waveIndex];
+	//ウェーブの残り時間をHUDに渡す。秒の表示はHUD側で切り上げる（0.3秒残りなら「あと1秒」）
 	_hud.SetWave(static_cast<int>(_waveIndex) + 1, static_cast<int>(_waves.size()), wave.duration - _waveElapsed);
 	if (_waveElapsed < wave.duration) return;
 
+	//次のウェーブがあれば、そこへ進む
 	if (_waveIndex + 1 < _waves.size())
 	{
 		StartWave(_waveIndex + 1);
@@ -75,6 +76,7 @@ void GameScene::SubScribeEvents()
 		_hud.SetPlayerHp(playerStatus->GetHealth(), playerStatus->GetMaxHealth());   //初期値
 		playerStatus->OnHealthChanged.Subscribe([this](float hp, float maxHp) { _hud.SetPlayerHp(hp, maxHp); });
 
+		//死亡時にGameOverへ遷移する
 		playerStatus->OnDeathFinished.Subscribe([this]
 			{
 				_locator.sceneManager->RequestChange(SceneName::EGameOver);
@@ -82,11 +84,14 @@ void GameScene::SubScribeEvents()
 	}
 	if (auto* playerAttack = player->GetComponent<PlayerAttack>())
 	{
+		//ヒート値の変化をHUDに渡す
 		playerAttack->OnHeatChanged.Subscribe([this](float heat, float max,bool isOver) 
 			{ _hud.SetHeat(heat, max,isOver); });
 	}
+
 	if (auto* playerBuff = player->GetComponent<PlayerBuff>())
 	{
+		//強化の段階と残り時間をHUDに渡す
 		playerBuff->OnBuffChanged.Subscribe([this](BuffType type, int level, float remaining)
 			{ _hud.SetBuff(type, level, remaining); });
 
@@ -98,9 +103,11 @@ void GameScene::SubScribeEvents()
 	}
 	if (auto* playerCommand = player->GetComponent<PlayerCommand>())
 	{
+		//コマンドの候補や入力中の方向列をHUDに渡す
 		playerCommand->OnCommandChanged.Subscribe([this](const CommandView& command)
 			{ _hud.SetCommand(command); });
 
+		//コマンドの結果をHUDに渡す
 		playerCommand->OnCommandResult.Subscribe([this](CommandResult result)
 			{_hud.SetCommandResult(result); });
 	}
@@ -116,7 +123,7 @@ void GameScene::SpawnBoss()
 	{
 		_hud.SetBossHp(bossStatus->GetHealth(), bossStatus->GetMaxHealth());   //初期値
 		bossStatus->OnHealthChanged.Subscribe([this](float hp, float maxHp) { _hud.SetBossHp(hp, maxHp); });
-
+		//死亡時にGameClearへ遷移する
 		bossStatus->OnDeathFinished.Subscribe([this]
 			{
 				_locator.sceneManager->RequestChange(SceneName::EGameClear);
@@ -132,6 +139,7 @@ void GameScene::DrawUI()
 
 void GameScene::Update(float deltaTime)
 {
+	//背景スクロールはUpdateの最初にやる。DrawはDrawManagerに登録する
 	_background.Update(deltaTime);
 	_locator.drawManager->Register(DrawLayer::Background, [this] { _background.Draw(); });
 	_spawner.Update(deltaTime, *this);

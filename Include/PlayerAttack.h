@@ -36,15 +36,8 @@ public :
 	//真上から左右20度の範囲に、ランダムな向きで複数撃つ
 	void SpreadShot(bool isMoving);
 
-	//Jsonで宣言した配列のindexを設定する
-	void SetCurrentAttackIndex(size_t index)
-	{
-		if (index >= _attackTypes.size())
-		{
-			return; //範囲外
-		}
-		_currentAttackIndex = index;
-	}
+	//Jsonで宣言した配列のindexを設定する。範囲外なら何もしない
+	void SetCurrentAttackIndex(size_t index);
 	void SetAttackTypes(std::vector<int> type) { _attackTypes = std::move(type); }
 	//JSONにAttackTypeが無い場合でも落ちないように0を返す
 	int GetAttackType()const
@@ -54,19 +47,10 @@ public :
 
 	//ヒート値に関する処理
 	bool CanFire()const { return !_isOverheated; }
-	void AddHeat(float amount)
-	{
-		_heat = std::clamp(_heat + amount, 0.0f, _maxHeat);
-		if (_heat >= _maxHeat) _isOverheated = true;
-		OnHeatChanged.Invoke(_heat, _maxHeat,_isOverheated);
-	};
-	void Cool(float deltaTime)
-	{
-		if (_heat <= 0.0f) return;   //冷え切っていれば通知もしない
-		_heat = std::max(_heat - _coolRate * deltaTime, 0.0f);
-		if (_heat <= 0.0f) _isOverheated = false;   //0まで冷えたら撃てるようにする
-		OnHeatChanged.Invoke(_heat, _maxHeat,_isOverheated);
-	};
+	//撃った分のヒートを溜める。最大まで溜まるとオーバーヒート
+	void AddHeat(float amount);
+	//時間で冷やす。0まで冷えるとオーバーヒートが解ける
+	void Cool(float deltaTime);
 private:
 	//メンバ変数の角度内でランダムに撃つ
 	Vector2 GetRandomDirection()const;

@@ -18,9 +18,6 @@ namespace EnemyStates
 	{
 		EventMove,
 		EventMoveOnce,
-		EventSecondform,
-		EventInvincible,
-		EventInvincibleEnd,
 		EventDied,
 	};
 	enum AttackEvent
@@ -28,7 +25,6 @@ namespace EnemyStates
 		EventLongShot,
 		EventSpreadShot,
 		EventReflectShot,
-		EventLaser,
 		EventAttackStop
 	};
 
@@ -70,14 +66,6 @@ namespace EnemyStates
 		AliveState() : RandomMoveXState(2.0f, ScreenMargin) {}
 	};
 
-	class InvincibleState :public EnemyStateBase
-	{
-	protected:
-		void OnEnter(State* prevState)override {};
-		void OnUpdate(float deltaTime)override {};
-		void OnExit(State* nextState)override {};
-	};
-
 	//撃破エフェクトを出し、一定時間後に削除を予約する
 	class DeadState : public TimedState<EnemyController>
 	{
@@ -117,13 +105,6 @@ namespace EnemyStates
 	protected:
 		void Shoot(EnemyAttack& attack)override { attack.SpreadShot(); }
 		std::vector<Vector2> GetWarnDirections(const EnemyAttack& attack)const override { return attack.GetSpreadDirections(); }
-	};
-	class LaserState : public EnemyStateBase, public GunState
-	{
-	protected:
-		void OnEnter(State* prevState)override {};
-		void OnUpdate(float deltaTime)override {};
-		void OnExit(State* nextState)override {};
 	};
 	class AttackDisabledState : public EnemyStateBase {};
 }

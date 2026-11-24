@@ -1,11 +1,10 @@
 ﻿#pragma once
 #include <vector>
-#include <DxLib.h>
 #include "Datas.h"
 #include "ServiceLocator.h"
-#include "GameObjectfactory.h"
-#include "GameWindow.h"
-#include "BaseScene.h"
+
+class GameObjectFactory;
+class BaseScene;
 
 //読み込んだ出現データと、出現させた数をまとめたもの
 struct SpawnEntry
@@ -20,58 +19,19 @@ struct SpawnEntry
 class EnemySpawner
 {
 public:
-	void Initialize(const ServiceLocator& locator, std::vector<SpawnData> spawnData)
-	{
-		_factory = locator.factory;
-		for (auto& data : spawnData)
-			_entries.push_back({ std::move(data) });
-		_screenWidth = static_cast<int>(locator.gameWindow->GetBounds().width);
-		ResetTimer();
-	}
-
-	void Update(float deltaTime, BaseScene& scene)
-	{
-		if (!_isActive || _entries.empty()) return;
-
-		_timer -= deltaTime;
-		if (_timer > 0.0f) return;
-		ResetTimer();
-
-		//出現間隔がばらつかないように、出せないものは先に候補から外す
-		std::vector<SpawnEntry*> candidates;
-		candidates.reserve(_entries.size());
-		for (auto& entry : _entries)
-			if (entry.CanSpawn() && entry.data.firstWave <= _wave) candidates.push_back(&entry);
-		if (candidates.empty()) return;
-
-		SpawnEntry& entry = *candidates[GetRand(static_cast<int>(candidates.size()) - 1)];
-		++entry.spawnedCount;
-
-		ObjectData objectData = entry.data.objectData;
-		if (entry.data.isRandomX)
-			objectData.transform.Position.x = static_cast<float>(40 + GetRand(_screenWidth - 80));
-
-		scene.Spawn(_factory->CreateObject(objectData));
-	}
+	void Initialize(const ServiceLocator& locator, std::vector<SpawnData> spawnData);
+	void Update(float deltaTime, BaseScene& scene);
 
 	//ボス出現時などに出現を止める
 	void SetActive(bool isActive) { _isActive = isActive; }
 
 	//ウェーブを切り替える。waveは1から数える
 	//FirstWaveがwave以下の敵だけ出す
-	void SetWave(int wave, const WaveData& data)
-	{
-		_wave = wave;
-		_minInterval = data.minInterval;
-		_maxInterval = data.maxInterval;
-		ResetTimer();
-	}
+	void SetWave(int wave, const WaveData& data);
 
 private:
-	void ResetTimer()
-	{
-		_timer = _minInterval + GetRand(static_cast<int>((_maxInterval - _minInterval) * 100)) / 100.0f;
-	}
+	//次に出すまでの時間を、minInterval〜maxIntervalからランダムに決める
+	void ResetTimer();
 
 	GameObjectFactory* _factory = nullptr;
 	std::vector<SpawnEntry> _entries;

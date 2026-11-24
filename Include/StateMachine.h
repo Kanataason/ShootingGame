@@ -182,7 +182,7 @@ public:
 
             nextState = anyTransition->second;
         }
-
+		//遷移先が見つかったので、状態を切り替える
         _nextStateEventId = eventId;
         Change(*nextState);
     }

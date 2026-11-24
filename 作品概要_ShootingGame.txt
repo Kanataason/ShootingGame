@@ -27,7 +27,7 @@ GitHub　　：https://github.com/Kanataason/ShootingGame
 ■ 開発環境
 ・C++20
 ・DxLib 3.24f
-・Visual Studio 2022（プラットフォームツールセット v143、x64）
+・Visual Studio 2022（プラットフォームツールセット v143、x64 で開発）
 ・Windows 11
 
 ■ 動作確認
@@ -39,9 +39,11 @@ exe と同じフォルダに、「JsonData」「Library\image」「Library\Sound
 終了は ESC キーで行えます。
 
 ■ ビルド方法
-「ShootingGame.sln」を Visual Studio 2022 で開き、構成を x64 の Debug か Release にしてビルドしてください。
+「ShootingGame.sln」を Visual Studio で開き、構成を Debug か Release にしてビルドしてください（構成は x64 だけです）。
 DxLib と nlohmann/json はリポジトリに入っているので、別に入れる必要はありません。
-（x86 用の DxLib は入っていないので、x86 ではビルドできません。）
+C++20 を使っているので、Visual Studio 2019（16.11 以降）/ 2022 / 2026 でビルドできます。
+ツールセットは固定していないので、開いた Visual Studio の標準のものが使われます。
+（ビルドを確認したのは Visual Studio 2022 です。）
 
 ■ 操作方法
 ・移動　　　　　：W / A / S / D
@@ -71,27 +73,27 @@ DxLib と nlohmann/json はリポジトリに入っているので、別に入�
 基盤
 　main.cpp / GameManager / GameObject / Component / GameObjectFactory /
 　ServiceLocator.h / StateMachine.h / TimedState.h / Event.h / ObjectPool.h /
-　GameTime.h / GameWindow.h / Transform.h / Vector2.h / Primitive.h
+　GameTime / GameWindow / Transform.h / Vector2.h / Primitive.h
 
 シーン
-　SceneManager / SceneLoader / BaseScene.h / Title（GameTitle.h）/ GameScene / GameResult /
-　GameProgress.h / EnemySpawner.h
+　SceneManager / SceneLoader / BaseScene / Title（GameTitle.h）/ GameScene / GameResult /
+　EnemySpawner
 
 プレイヤー
-　PlayerController / PlayerStates / PlayerMovement / PlayerAttack / PlayerStatus.h /
-　PlayerProvider.h / GunState.h / GunData.h / PlayerCommand / PlayerBuff
+　PlayerController / PlayerStates / PlayerMovement / PlayerAttack / PlayerStatus /
+　PlayerProvider.h / GunState / GunData.h / PlayerCommand / PlayerBuff
 
 敵・ボス
 　EnemyController / EnemyStates / EnemyCommonStates.h / EnemyMovement / EnemyAttack /
-　EnemyStatus.h / BossController / BossStates / CharacterStatus.h
+　EnemyStatus / BossController / BossStates / CharacterStatus
 
 当たり判定・弾
-　Collider.h / CircleCollider.h / BoxCollider.h / Collision.h / ColliderManager /
+　Collider / CircleCollider.h / BoxCollider.h / Collision / ColliderManager /
 　ColliderRegistry.h / Bullet.h / BulletManager
 
 管理・その他
-　DrawManager.h / InputManager / SoundManager / ModelManager / JsonLoader / Datas.h /
-　GameHUD / BackgroundScroller.h / EffectUtillity.h
+　DrawManager / InputManager / SoundManager / JsonLoader / Datas.h /
+　GameHUD / BackgroundScroller / EffectUtillity
 
 
 
@@ -199,7 +201,7 @@ https://www.youtube.com/watch?v=PbtJt5tnnI8
 　速い弾でも、すり抜けにくくなっています。コライダー同士の押し戻しは、形の組み合わせ
 　（円と円、四角形と円、四角形と四角形）ごとの関数テーブルで呼び分け、逆向きの組み合わせも
 　同じ表で処理します。
-　（Collision.h、ColliderManager.cpp）
+　（Collision.cpp、ColliderManager.cpp）
 
 5．JSON によるデータ駆動
 　シーンの構成、ウェーブ、雑魚敵のテンプレート（HP、攻撃、画像、当たり判定）、ボス、効果音と BGM を
@@ -210,7 +212,7 @@ https://www.youtube.com/watch?v=PbtJt5tnnI8
 　HP、ヒート、コマンド、強化の変化は Event（Observer パターン）で HUD に通知し、ゲームの処理が UI を
 　直接触らないようにしています。描画は登録だけを行い、フレームの最後にレイヤーの順
 　（背景 → 敵 → プレイヤー → 弾 → エフェクト → UI）でまとめて描きます。
-　（Event.h、GameHUD.cpp、DrawManager.h）
+　（Event.h、GameHUD.cpp、DrawManager.cpp）
 
 7．安全なシーン切り替え
 　シーンの切り替えは予約だけを行い、次のフレームの最初に実行します。処理の途中で
@@ -236,7 +238,7 @@ https://www.youtube.com/watch?v=PbtJt5tnnI8
 10．通知の分離
 　HP が変わったとき（HP バーの更新）と、ダメージを受けたとき（被弾後の無敵）の Event を分けています。
 　回復で HP が変わっても、無敵や点滅が起きません。
-　（CharacterStatus.h、PlayerController.cpp）
+　（CharacterStatus.cpp、PlayerController.cpp）
 
 11．その他
 　・ウェーブの長さ、敵が出る間隔、敵が出始めるウェーブは Spawn.json で調整できます

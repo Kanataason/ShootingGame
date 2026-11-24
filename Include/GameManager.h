@@ -16,13 +16,8 @@
 class GameManager
 {
 public:
-	GameManager(HWND hwnd):_gameWindow(hwnd), _inputManager(_gameWindow)
-	{
-		int width = 0;
-		int height = 0;
-		GetDrawScreenSize(&width, &height);
-		_gameWindow.OnResize((float)width, (float)height);
-	}
+	//画面の大きさをGameWindowに入れる。DxLib_Initの後に作ること
+	explicit GameManager(HWND hwnd);
 	//初期化関数
 	void Initialize();
 

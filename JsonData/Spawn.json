@@ -17,8 +17,7 @@
             },
             "AttackType": [ 2001 ],
             "Transform": {
-                "Position": [ 0, -100, 0 ],
-                "Rotation": 0
+                "Position": [ 0, -100, 0 ]
             },
             "Radius": 25
         },
@@ -34,8 +33,7 @@
             },
             "AttackType": [ 2003 ],
             "Transform": {
-                "Position": [ 0, -100, 0 ],
-                "Rotation": 0
+                "Position": [ 0, -100, 0 ]
             },
             "HalfSize": [ 30, 20 ]
         },
@@ -52,8 +50,7 @@
             },
             "AttackType": [ 2002 ],
             "Transform": {
-                "Position": [ 570, -100, 0 ],
-                "Rotation": 0
+                "Position": [ 570, -100, 0 ]
             },
             "HalfSize": [ 30, 18 ]
         }

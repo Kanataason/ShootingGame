@@ -29,6 +29,7 @@ std::unique_ptr<GameObject> GameObjectFactory::CreateObject(ObjectData data)
 	auto foundBuilder = _objectBuilderTable.find(data.name);
 	if (foundBuilder != _objectBuilderTable.end())
 	{
+		//ObjectTypeに対応する組み立て関数が見つかったので呼ぶ
 		ObjectBuilder builder = foundBuilder->second;
 		(this->*builder)(*obj.get(), data); //メンバー関数として呼ぶ
 	}
@@ -38,6 +39,7 @@ std::unique_ptr<GameObject> GameObjectFactory::CreateObject(ObjectData data)
 }
 void GameObjectFactory::SetShapeData(GameObject& gameObject, const ObjectData& objectData,Team team)
 {
+	//キャラクターの種類によって、円形か四角形の当たり判定を作る
 	switch (objectData.statusData.characterType)
 	{
 	case CharacterType::Player:
@@ -46,6 +48,7 @@ void GameObjectFactory::SetShapeData(GameObject& gameObject, const ObjectData& o
 		auto sizeStatus = gameObject.AddComponent<CircleShape>();
 		if (const SphereData* shapeData = std::get_if<SphereData>(&objectData.sizeData))
 		{
+			//円形の当たり判定を作る
 			gameObject.AddComponent<CircleCollider>(shapeData->radius,team);
 			sizeStatus->SetRadius(shapeData->radius);
 		}
@@ -56,10 +59,9 @@ void GameObjectFactory::SetShapeData(GameObject& gameObject, const ObjectData& o
 	case CharacterType::ReflectShotEnemy:
 	{
 		auto sizeStatus = gameObject.AddComponent<BoxShape>();
-		sizeStatus->SetCenter(objectData.transform.Position);
-
 		if (const BoxData* shapeData = std::get_if<BoxData>(&objectData.sizeData))
 		{
+			//四角形の当たり判定を作る
 			gameObject.AddComponent<BoxCollider>(shapeData->halfSize,team);
 			sizeStatus->SetHalfSize(shapeData->halfSize);
 		}
@@ -106,6 +108,7 @@ void GameObjectFactory::BuildPlayer(GameObject& gameObject, const ObjectData& ob
 	gameObject.AddComponent<PlayerCommand>();
 
 	SetShapeData(gameObject, objectData, Team::Player);
+	//PlayerProviderにプレイヤーを登録する
 	_locator.playerProvider->SetPlayer(&gameObject);
 }
 void GameObjectFactory::BuildBoss(GameObject& gameObject, const ObjectData& objectData)
@@ -117,6 +120,7 @@ void GameObjectFactory::BuildBoss(GameObject& gameObject, const ObjectData& obje
 	auto attack = gameObject.AddComponent<EnemyAttack>();
 	attack->SetAttackTypes(objectData.attackType);
 
+	//各敵に対しての初期値を設定
 	auto status = gameObject.AddComponent<EnemyStatus>();
 	status->SetHealth(objectData.statusData.health);
 	status->SetCharacterType(objectData.statusData.characterType);

@@ -2,6 +2,7 @@
 
 void PlayerCommand::Offer(std::vector<CommandCandidate> candidates, float offerTime)
 {
+	//候補を出すときは、前の入力が残っていても消す
 	_view = {};
 	_view.phase = CommandPhase::Offer;
 	_view.candidates = std::move(candidates);
@@ -13,8 +14,10 @@ void PlayerCommand::Offer(std::vector<CommandCandidate> candidates, float offerT
 
 void PlayerCommand::NotifyResult(CommandResult result)
 {
+	//まだ途中なら、出す結果がない
 	if (CommandResult::Progress == result)return;
 
+	//候補を出している間の時間切れは、見送っただけなので「TIME UP」を出さない
 	if (CommandResult::TimeOut == result && _view.phase != CommandPhase::Input)return;
 
 	OnCommandResult.Invoke(result);
@@ -86,7 +89,8 @@ CommandResult PlayerCommand::Judge(InputKeyName key)
 		_graceRemaining = GraceTime;
 		return CommandResult::Progress;
 	}
-
+	
+	//すべてのキーを正しく入力したかを判定
 	return (_view.progress >= static_cast<int>(_view.sequence.size()))
 		? CommandResult::Completed
 		: CommandResult::Progress;
@@ -108,7 +112,8 @@ CommandResult PlayerCommand::Tick(float deltaTime)
 			result = CommandResult::Missed;
 		}
 	}
-
+	//残り時間を減らす。0以下になったら時間切れ
+	//猶予切れのミスと同じフレームに起きたら、resultを上書きするので時間切れが優先される
 	_view.remaining -= deltaTime;
 	if (_view.remaining <= 0.0f)
 	{
@@ -130,6 +135,7 @@ void PlayerCommand::ResetProgress()
 
 InputKeyName PlayerCommand::Expected(int index) const
 {
+	//指定されたインデックスのキーを返す。範囲外ならnoneを返す
 	if (index < 0 || index >= static_cast<int>(_view.sequence.size())) return InputKeyName::none;
 	return _view.sequence[index];
 }

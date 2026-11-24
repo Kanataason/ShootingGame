@@ -277,8 +277,11 @@ namespace PlayerStates
 	{
 		auto* command = owner().GetCommand();
 
+		//このフレームに押された矢印を、押された順に1つずつ渡す
 		for (InputKeyName key : owner().GetCurrentInput().commandList.commands)
 		{
+			//最後まで打てたら強化をかけて待機へ
+			//ミスしたときは最初からやり直しになるだけなので、入力中のまま続ける
 			if (command->Input(key) == CommandResult::Completed)
 			{
 				ApplyCommand(owner(), command->GetType());
@@ -287,6 +290,7 @@ namespace PlayerStates
 			}
 		}
 
+		//時間切れなら強化なしで待機へ
 		if (command->Tick(deltaTime) == CommandResult::TimeOut)
 		{
 			stateMachine().Dispatch(CommandEvent::EventCommandEnd);

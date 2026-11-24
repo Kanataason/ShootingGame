@@ -57,13 +57,16 @@ namespace EnemyStates
 	}
 	void EventState::DispatchByState()
 	{
+		//敵の種類ごとに、次のステートを決める
 		switch (owner().GetStatus()->GetCharacterType())
 		{
 		case CharacterType::ReflectShotEnemy:
 		case CharacterType::MoveEnemy:
+			//同じ高さのまま、左右に動き続ける
 			stateMachine().Dispatch(LifeEvent::EventMove);
 			break;
 		case CharacterType::SpreadEnemy:
+			//ランダムな位置へ1回だけ動き、そこに留まる。攻撃は別のステートマシンが続ける
 			stateMachine().Dispatch(LifeEvent::EventMoveOnce);
 			break;
 		}

@@ -85,10 +85,55 @@
     <Filter Include="ヘッダー ファイル\Scene">
       <UniqueIdentifier>{8c5fca7e-394d-49a8-b23d-68ba84db0f9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Physics">
+      <UniqueIdentifier>{9365d401-510c-4206-89ce-11a5b5b77319}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Utillity">
+      <UniqueIdentifier>{b115778a-eae3-4a21-a1ae-5cb927e0e4e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BackgroundScroller.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collision.cpp">
+      <Filter>ソース ファイル\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EffectUtillity.cpp">
+      <Filter>ソース ファイル\Utillity</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EnemySpawner.cpp">
+      <Filter>ソース ファイル\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BaseScene.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CharacterStatus.cpp">
+      <Filter>ソース ファイル\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collider.cpp">
+      <Filter>ソース ファイル\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DrawManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EnemyStatus.cpp">
+      <Filter>ソース ファイル\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameTime.cpp">
+      <Filter>ソース ファイル\Utillity</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameWindow.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GunState.cpp">
+      <Filter>ソース ファイル\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlayerStatus.cpp">
+      <Filter>ソース ファイル\Character\Player</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameManager.cpp">
       <Filter>ソース ファイル\Manager</Filter>
@@ -110,9 +155,6 @@
     </ClCompile>
     <ClCompile Include="Source\GameObjectFactory.cpp">
       <Filter>ソース ファイル\Factory</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModelManager.cpp">
-      <Filter>ソース ファイル\Factory\Manager</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameObject.cpp">
       <Filter>ソース ファイル</Filter>
@@ -196,9 +238,6 @@
     </ClInclude>
     <ClInclude Include="Include\GameObjectfactory.h">
       <Filter>ヘッダー ファイル\Factory</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\ModelManager.h">
-      <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Include\JsonLoader.h">
       <Filter>ヘッダー ファイル\Loader</Filter>
@@ -300,9 +339,6 @@
       <Filter>ヘッダー ファイル\Utillity</Filter>
     </ClInclude>
     <ClInclude Include="Include\BackgroundScroller.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\GameProgress.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Include\GameHUD.h">

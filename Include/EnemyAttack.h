@@ -64,7 +64,7 @@ private:
 	//directionsの方向へ1発ずつ、本体の中心から撃つ
 	void FireAll(const std::vector<Vector2>& directions);
 	Vector2 GetNearerHorizontalAngle() const;
-	//角度から、上向きを基準にした単位ベクトルを返す
+	//角度から単位ベクトルを返す。0度が左、90度が上、180度が右（反射弾の扇の向きに使う）
 	Vector2 DirectionFromAngle(float degrees)const;
 	//プレイヤーにかかっている予測の段階
 	int GetPredictLevel() const;

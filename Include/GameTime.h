@@ -1,24 +1,13 @@
 ﻿#pragma once
-#include "DxLib.h"
 
+//1フレームの経過時間と、ゲーム開始からの経過時間を持つ
 class Time
 {
 public:
 
-	//デルタタイムを取得関数
-	static float GetDeltaTime(int& prevCount)
-	{
-	    int nowCount = GetNowCount();
-		float result = (float)(nowCount - prevCount) / 1000.0f;
-		prevCount = nowCount;
-
-		//ウィンドウ操作などで処理が止まった直後に、弾や敵がワープしないよう上限を付ける
-		if (result > MaxDeltaTime) result = MaxDeltaTime;
-
-		SetWorldTime(result);
-
-		return result;
-	}
+	//前のフレームからの経過秒数を返し、ゲーム開始からの経過時間に足す
+	//prevCountは前のフレームのGetNowCountの値。呼ぶと今の値に書き換わる
+	static float GetDeltaTime(int& prevCount);
 
 	 static float GetWorldTime() { return WorldTime; }
 

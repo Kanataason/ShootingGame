@@ -17,6 +17,29 @@ void PlayerAttack::InitializeShotSetting(int type)
         _currentShotData = *setting;
 }
 
+void PlayerAttack::SetCurrentAttackIndex(size_t index)
+{
+    if (index >= _attackTypes.size())
+    {
+        return; //範囲外
+    }
+    _currentAttackIndex = index;
+}
+
+void PlayerAttack::AddHeat(float amount)
+{
+    _heat = std::clamp(_heat + amount, 0.0f, _maxHeat);
+    if (_heat >= _maxHeat) _isOverheated = true;
+    OnHeatChanged.Invoke(_heat, _maxHeat, _isOverheated);
+}
+void PlayerAttack::Cool(float deltaTime)
+{
+    if (_heat <= 0.0f) return;   //冷え切っていれば通知もしない
+    _heat = (std::max)(_heat - _coolRate * deltaTime, 0.0f);
+    if (_heat <= 0.0f) _isOverheated = false;   //0まで冷えたら撃てるようにする
+    OnHeatChanged.Invoke(_heat, _maxHeat, _isOverheated);
+}
+
 void PlayerAttack::LongShot(bool isMoving)
 {
     //上方向固定なのでdirectionは固定

@@ -25,3 +25,8 @@ void SoundManager::PlayBgm(SoundId id)
 	_currentBgm = handle;
 	if (_currentBgm != -1) PlaySoundMem(_currentBgm, DX_PLAYTYPE_LOOP);
 }
+void SoundManager::StopBgm()
+{
+	if (_currentBgm != -1) StopSoundMem(_currentBgm);
+	_currentBgm = -1;
+}

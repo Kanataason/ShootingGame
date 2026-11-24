@@ -139,14 +139,16 @@ C++ と DxLib で作った、2D の縦スクロールシューティングです
 
 ### 必要なもの
 - Windows 10 / 11(64bit)
-- Visual Studio 2022(「C++ によるデスクトップ開発」)
+- Visual Studio 2019(16.11 以降)/ 2022 / 2026(「C++ によるデスクトップ開発」)
+  - C++20 を使っているので、Visual Studio 2017 以前ではビルドできません。
+  - ツールセットは固定していないので、開いた Visual Studio の標準のもの(2019 は v142、2022 は v143、2026 は v145)でビルドされます。
+  - ビルドを確認したのは Visual Studio 2022 です。
 
 DxLib と nlohmann/json は、リポジトリに入っています。別に入れる必要はありません。
 
 ### 手順
 1. `ShootingGame.sln` を、Visual Studio で開きます。
-2. 構成を **x64** の **Debug** か **Release** にして、ビルドします(Ctrl + Shift + B)。
-   - x86(Win32)用の DxLib は入っていないので、x86 ではビルドできません。
+2. 構成を **Debug** か **Release** にして、ビルドします(Ctrl + Shift + B)。構成は x64 だけです。
 3. 実行します(F5)。
 
 - ビルドの後処理で、`JsonData`、`Library/image`、`Library/Sound` が、実行ファイルの隣にコピーされます。exe を直接起動しても動きます。

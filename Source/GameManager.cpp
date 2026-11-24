@@ -1,6 +1,14 @@
 ﻿#include "GameManager.h"
 #include "JsonLoader.h"
 
+GameManager::GameManager(HWND hwnd) :_gameWindow(hwnd), _inputManager(_gameWindow)
+{
+	int width = 0;
+	int height = 0;
+	GetDrawScreenSize(&width, &height);
+	_gameWindow.OnResize((float)width, (float)height);
+}
+
 void GameManager::Initialize()
 {
 	JsonLoader loader;

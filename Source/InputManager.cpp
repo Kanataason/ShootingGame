@@ -1,5 +1,11 @@
 ﻿#include "InputManager.h"
 
+InputManager::InputManager(GameWindow& gameWindow) :_gameWindow(&gameWindow)
+{
+    POINT center = GetScreenCenter();
+    SetCursorPos(center.x, center.y);
+}
+
 POINT InputManager::GetScreenCenter()
 {
     int screenWidth = 0;
@@ -25,33 +31,15 @@ void InputManager::Update()
         _current[keyCode] = isForeground && (GetAsyncKeyState(keyCode) & 0x8000);
     }
 
-    UpdateMouseDelta(isForeground);
+    KeepCursorCenter(isForeground);
 }
-void InputManager::UpdateMouseDelta(bool isForeground)
+void InputManager::KeepCursorCenter(bool isForeground)
 {
-    _mouseDelta = { 0, 0 };
     if (!isForeground) { return; }
-
-    POINT cursorPosition{};
-    GetCursorPos(&cursorPosition);//スクリーン座標
 
     POINT center = GetScreenCenter(); //クライアント座標
     ClientToScreen(_gameWindow->GetHandle(), &center);//スクリーン座標に揃える
-
-    _mouseDelta.x = cursorPosition.x - center.x;
-    _mouseDelta.y = center.y - cursorPosition.y;
-
-    SetCursorPos(center.x, center.y);//カーソルを中央へ戻す
-}
-POINT InputManager::GetMouseDelta() const
-{
-    return _mouseDelta; //Update で計算した値を返すだけ
-}
-POINT InputManager::GetMousePosition()const
-{
-    POINT current;
-    GetCursorPos(&current);
-    return current;
+    SetCursorPos(center.x, center.y);
 }
 bool InputManager::GetKey(int key)const
 {
@@ -60,19 +48,4 @@ bool InputManager::GetKey(int key)const
 bool InputManager::GetKeyDown(int key)const
 {
     return _current[key] && !_previous[key];
-}
-bool InputManager::GetKeyEnter(int key)const
-{
-    return !_current[key] && _previous[key];
-}
-bool InputManager::AnyKey()const
-{
-    for (int i = 0; i < 256; ++i)
-    {
-        if (_current[i])
-        {
-            return true; //1つでも押されているキーがあれば true
-        }
-    }
-    return false; //どのキーも押されていない
 }

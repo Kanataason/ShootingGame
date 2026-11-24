@@ -64,6 +64,7 @@ std::vector<Vector2> EnemyAttack::GetLongRangeDirections() const
 {
 	if (!CanShoot()) return {};
 
+	//プレイヤーの方向を向く
 	const Vector2& shooterPosition = GetOwner()->GetTransform().Position;
 	Vector2 toPlayer = _provider->GetPlayer()->GetTransform().Position - shooterPosition;
 	float distance = toPlayer.Length();
@@ -86,6 +87,7 @@ std::vector<Vector2> EnemyAttack::GetReflectDirections() const
 		? angleRange.x
 		: (angleRange.x + angleRange.y) / 2.0f;
 
+	//方向ベクトルを作る
 	std::vector<Vector2> directions;
 	for (int bulletIndex = 0; bulletIndex < bulletCount; ++bulletIndex)
 		directions.push_back(DirectionFromAngle(startDegrees + angleStep * bulletIndex));
@@ -103,9 +105,11 @@ std::vector<Vector2> EnemyAttack::GetSwirlDirections(float baseDegrees) const
 
 	float angleStep = 360.0f / static_cast<float>(armCount);
 
+	
 	std::vector<Vector2> directions;
 	for (int armIndex = 0; armIndex < armCount; ++armIndex)
 	{
+		//右向きを0度として、画面上では時計回りに並べる（yが下向きに正のため）
 		float radians = (baseDegrees + angleStep * armIndex) * DX_PI_F / 180.0f;
 		directions.push_back({ std::cos(radians), std::sin(radians) });
 	}
@@ -128,6 +132,7 @@ void EnemyAttack::DrawWarning(const std::vector<Vector2>& directions, float rati
 	const float length = WarnLineLengths[level];
 	if (length > 0.0f)
 	{
+		//撃つ直前ほど濃くする。段階が高いほど濃くなる
 		SetDrawBlendMode(DX_BLENDMODE_ADD, static_cast<int>(ratio * (WarnLineBaseAlpha + level * WarnLineAlphaPerLevel)));
 		for (const Vector2& direction : directions)
 		{
@@ -173,11 +178,12 @@ Vector2 EnemyAttack::GetMuzzlePosition(const Vector2& direction) const
 	const Vector2& center = GetOwner()->GetTransform().Position;
 	if (_shape == nullptr) return center;
 
-	//円なら半径、四角形なら向いている方向で先に当たる辺までの距離
+	//円なら半径
 	float offset = _shape->GetRadius();
 	Vector2 half = _shape->GetHalfSize();
 	if (half.x > 0.0f || half.y > 0.0f)
 	{
+		//四角形の場合、向いている方向で先に当たる辺までの距離を計算する
 		float toX = (direction.x != 0.0f) ? half.x / std::abs(direction.x) : FLT_MAX;
 		float toY = (direction.y != 0.0f) ? half.y / std::abs(direction.y) : FLT_MAX;
 		offset = (std::min)(toX, toY);

@@ -19,7 +19,6 @@ enum class ObjectType
 {
 	Player,
 	Enemy,
-	Ground,
 	Boss,
 	None
 };
@@ -47,7 +46,6 @@ enum class SoundId
 	PlayerHit, 
 	CharacterExplosion,
 	BossExplosion,
-	Overheat,
 	//コマンド成功時
 	CommandAttack,
 	CommandDefense,
@@ -57,7 +55,6 @@ enum class SoundId
 	BgmGame,
 	BgmBoss,
 	BgmGameClear,
-	BgmGameOver,
 	Count
 };
 //すべてJsonからの読みだした値を保存するのに使う

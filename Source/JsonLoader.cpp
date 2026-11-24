@@ -37,7 +37,6 @@ namespace
 	{
 		{"Player",ObjectType::Player},
 		{"Enemy",ObjectType::Enemy},
-		{"Ground",ObjectType::Ground},
 		{"Boss",ObjectType::Boss}
 	};
 	const std::unordered_map<std::string, CharacterType> characterTypeTable =
@@ -68,7 +67,6 @@ namespace
 		{"PlayerShot",SoundId::PlayerShot},
 		{"PlayerShotGun",SoundId::PlayerShotGun},
 		{"PlayerHit",SoundId::PlayerHit},
-		{"Overheat",    SoundId::Overheat},
 		{"CommandAttack",SoundId::CommandAttack},
 		{"CommandDefense",SoundId::CommandDefense},
 		{"CommandSpeed",SoundId::CommandSpeed},
@@ -78,8 +76,7 @@ namespace
 		{"BossExplosion",SoundId::BossExplosion},
 		{"BgmBoss",SoundId::BgmBoss},
 		{"BgmGame",SoundId::BgmGame},
-		{"BgmClear",SoundId::BgmGameClear},
-		{"BgmOver",SoundId::BgmGameOver}
+		{"BgmClear",SoundId::BgmGameClear}
 	};
 }
 
@@ -113,10 +110,6 @@ SceneData JsonLoader::LoadScenes(const json& root)const
 }
 
 
-ObjectData JsonLoader::LoadSceneData(const json& root)const
-{
-	return LoadObjectData(root);
-}
 ObjectData  JsonLoader::LoadObjectData(const json& root)const
 {
 	ObjectData data{};
@@ -153,7 +146,7 @@ std::vector<SpawnData> JsonLoader::LoadSpawnData(const std::string& path) const
 	for (const auto& templateRoot : root.at("Templates"))
 	{
 		SpawnData data;
-		data.objectData = LoadSceneData(templateRoot);
+		data.objectData = LoadObjectData(templateRoot);
 		data.isRandomX = templateRoot.value("RandomX", true);
 		data.maxCount = templateRoot.value("MaxCount", -1);
 		data.firstWave = templateRoot.value("FirstWave", 1);
@@ -208,12 +201,6 @@ Transform JsonLoader::LoadTransform(const json& root)const
 	{
 		transform.Position.x = root.at("Position")[0].get<float>();
 		transform.Position.y = root.at("Position")[1].get<float>();
-	}
-
-	//Rotationは2Dでは一つの軸でしか回さないので値はZだけ
-	if (root.contains("Rotation"))
-	{
-		transform.Rotation = root.at("Rotation").get<float>();
 	}
 
 	return transform;

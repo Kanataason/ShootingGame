@@ -11,7 +11,6 @@ class PlayerAttack;
 class PlayerStatus;
 class PlayerBuff;
 class PlayerCommand;
-class CircleShape;
 class Collider;
 class DrawManager;
 
@@ -94,11 +93,9 @@ private:
 	PlayerStatus* _status = nullptr;
 	PlayerBuff* _buff = nullptr;
 	PlayerCommand* _command = nullptr;
-	CircleShape* _sizeStatus = nullptr;
 	Collider* _collider = nullptr;
-	
+
 	SoundManager* _soundManager = nullptr;
-	SceneManager* _sceneManager = nullptr;
 	DrawManager* _drawManager = nullptr;
 
 	StateMachine<PlayerController> _normalState;

@@ -22,16 +22,9 @@ public:
         : Component(source), _team(source._team) {
     }  //登録情報はコピーしない
 
-    ~Collider() override
-    {
-        if (_registry != nullptr) { _registry->Unregister(this); }
-    }
+    ~Collider() override;
 
-    void Initialize(ServiceLocator& locator) override
-    {
-        _registry = locator.colliderRegistry;
-        _registry->Register(this);
-    }
+    void Initialize(ServiceLocator& locator) override;
 
     void SetColliderType(ColliderType type) { _colliderType = type; }
     const ColliderType& GetColliderType()const { return _colliderType; }

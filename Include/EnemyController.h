@@ -2,12 +2,10 @@
 #include "Component.h"
 #include "StateMachine.h"
 
-class Primitive;
 class EnemyStatus;
 class EnemyMovement;
 class EnemyAttack;
 class Collider;
-class GameProgress;
 class DrawManager;
 class SoundManager;
 
@@ -53,12 +51,10 @@ private:
 	bool _isDead = false;
 	DrawManager* _drawManager = nullptr;
 
-	Primitive* _sizeStatus = nullptr;
 	EnemyStatus* _status = nullptr;
 	EnemyMovement* _movement = nullptr;
 	EnemyAttack* _attack = nullptr;
 	Collider* _collider = nullptr;
-	GameProgress* _progress = nullptr;
 	SoundManager* _soundManager = nullptr;
 
 	const ScreenBounds* _bounds = nullptr;

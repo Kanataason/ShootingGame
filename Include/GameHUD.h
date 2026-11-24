@@ -4,7 +4,6 @@
 
 #include "GameTime.h"
 #include "ServiceLocator.h"
-#include "GameProgress.h"
 #include "PlayerBuff.h"
 #include "PlayerCommand.h"
 

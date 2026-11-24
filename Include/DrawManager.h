@@ -15,14 +15,7 @@ public:
 		_layers[static_cast<size_t>(layer)].push_back(std::move(draw));
 	};
 	//レイヤーの順に全部描いて、登録を空にする（フレームの最後に1回）
-	void Flush()
-	{
-		for (auto& layer : _layers)
-		{
-			for (auto& draw : layer) draw();
-			layer.clear();//clearしてもメモリは残るので、毎フレームの確保は起きない
-		}
-	}
+	void Flush();
 private:
 	std::array<std::vector<std::function<void()>>, static_cast<size_t>(DrawLayer::Count)> _layers;
 };

@@ -12,10 +12,12 @@ void EnemyMovement::SetDestination(const Vector2& targetPos, float duration)
 
 bool EnemyMovement::Translate(float deltaTime)
 {
+	//JSONのIsMoveが0の敵は動かさない
 	if (!_isMove)return false;
 
 	auto& position = GetOwner()->GetTransform().Position;
 
+	// durationが0以下なら、即座に目標位置に移動して終了
 	if (_duration <= 0.0f)
 	{
 		position = _targetPos;
@@ -29,7 +31,7 @@ bool EnemyMovement::Translate(float deltaTime)
 		position = _targetPos; //ピッタリ移動
 		return true;
 	}
-
+	// Lerpで滑らかに移動
 	position.x = std::lerp(_startPos.x, _targetPos.x, progress);
 	position.y = std::lerp(_startPos.y, _targetPos.y, progress);
 	return false;

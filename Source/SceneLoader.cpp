@@ -11,7 +11,7 @@ void SceneLoader::LoadObjects(BaseScene* scene,
 	for (auto& roots : sceneData.at("objects"))
 	{
 		//Jsonから読み取ったオブジェクトをシーンに移す
-		auto sData = loader->LoadSceneData(roots);
+		auto sData = loader->LoadObjectData(roots);
 		scene->AddObject(std::move(factory.CreateObject(sData)));
 	}
 }

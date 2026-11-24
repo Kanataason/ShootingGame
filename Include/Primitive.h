@@ -13,10 +13,5 @@ public:
 	void Update(float deltaTime)override {};
 
 	virtual float GetRadius()const { return 0; }
-
-	virtual void SetCenter(Vector2 center) {};
-	virtual Vector2 GetCenter()const { return{}; }
 	virtual Vector2 GetHalfSize() const { return{}; }
-	virtual Vector2 GetMin() const { return{}; }
-	virtual Vector2 GetMax() const { return{}; }
 };

@@ -72,7 +72,7 @@ namespace
 		case InputKeyName::left:  return "←";
 		case InputKeyName::right: return "→";
 		default:                  return "";
-		}
+		}	
 	}
 }
 
@@ -94,6 +94,7 @@ void GameHUD::Draw() const
 
 void GameHUD::DrawPlayerHp() const
 {
+	//残り3割以下で赤くする
 	float ratio = ToRatio(_playerHp, _playerMaxHp);
 	int color = (ratio <= PlayerDangerRatio) ? 0xFF0000 : 0x00FF88;
 	DrawBar(10, 450, 150, ratio, color, "PLAYER");
@@ -122,7 +123,10 @@ void GameHUD::DrawBanner() const
 	const float fade = (std::min)((BannerShowTime - elapsed) / BannerFadeTime, 1.0f);
 
 	//拡大後の幅で真ん中にそろえる
-	const int width = static_cast<int>(GetDrawStringWidth(_banner.c_str(), static_cast<int>(_banner.size())) * BannerScale);
+	const int width = static_cast<int>(GetDrawStringWidth(_banner.c_str(), 
+		static_cast<int>(_banner.size())) * BannerScale);
+
+	//フェードアウトのために半透明で描く
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * fade));
 	DrawExtendString((_screenWidth - width) / 2, BannerY, BannerScale, BannerScale, _banner.c_str(), _bannerColor);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -131,6 +135,7 @@ void GameHUD::DrawBanner() const
 void GameHUD::DrawHeat() const
 {
 	float ratio = ToRatio(_heat, _maxHeat);
+	//オーバーヒート中は赤、7割以上はオレンジ、通常は黄
 	int color = _isOverHeat ? 0xFF0000
 		: (ratio >= HeatWarningRatio) ? 0xFF8800
 		: 0xFFFF00;
@@ -213,6 +218,7 @@ void GameHUD::DrawCommandLine(int y, BuffType type, const std::vector<InputKeyNa
 	DrawString(CommandX, y, GetBuffName(type), TextColor);
 	for (size_t index = 0; index < sequence.size(); ++index)
 	{
+		//入力済みの数と比較して色を変える
 		const int order = static_cast<int>(index);
 		int color = (order < progress) ? CommandDoneColor
 			: (order == progress) ? CommandNextColor

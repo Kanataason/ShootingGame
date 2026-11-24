@@ -59,7 +59,6 @@ public:
         T* createdObject = new (acquiredSlot->storage) T(std::forward<ConstructorArgs>(constructorArgs)...);
 
         _isActive[GetSlotIndex(acquiredSlot)] = true;
-        ++_activeCount;
         return createdObject;
     }
 
@@ -82,7 +81,6 @@ public:
         _isActive[slotIndex] = false;
         releasedSlot->nextFreeSlot = _firstFreeSlot;
         _firstFreeSlot = releasedSlot;
-        --_activeCount;
     }
 
     //使用中のオブジェクトすべてに処理を行う
@@ -110,10 +108,6 @@ public:
         }
     }
 
-    std::size_t GetActiveCount() const { return _activeCount; }
-    std::size_t GetCapacity() const { return Capacity; }
-    bool IsFull() const { return _firstFreeSlot == nullptr; }
-
 private:
 	union Slot
 	{
@@ -135,5 +129,4 @@ private:
 	Slot _slots[Capacity];
 	bool _isActive[Capacity];
 	Slot* _firstFreeSlot = nullptr;
-	std::size_t _activeCount = 0;
 };

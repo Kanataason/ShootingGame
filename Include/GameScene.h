@@ -31,8 +31,6 @@ private:
 
 	float _scrollSpeed = 120.0f;   //背景のスクロール速度
 
-	//シーンが持つので、リトライで作り直されると自動で0に戻る
-	GameProgress _progress;
 	GameHUD _hud;
 	bool _isBossSpawned = false;
 
