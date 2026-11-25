@@ -29,7 +29,7 @@ public:
 	void Initialize(ServiceLocator& locator)override;
 	void Update(float deltaTime)override {};
 
-	//弾に当たったらダメージを受ける。防御の強化中は減らす
+	//弾に当たったらダメージを受ける。防御の強化中は減らし、難易度の倍率も掛ける
 	void OnColliderEnter(float damage)override;
 	//HPが0になったら非アクティブにし、敵にも知らせる
 	void OnDead()override;
@@ -37,4 +37,5 @@ public:
 private:
 	PlayerProvider* _provider = nullptr;
 	PlayerBuff* _buff = nullptr;
+	float _damageTakenRate = 1.0f;//難易度による、受けるダメージの倍率
 };

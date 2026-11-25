@@ -33,10 +33,9 @@ public:
     GameObject* GetOwner() const { return _owner; }
 
     //無敵中や撃破演出中など、falseの間は弾との判定・押し戻しの両方から外れる
+    //アイテムを拾う判定だけは、プレイヤーがfalseでも行う
     void SetCollisionEnabled(bool isEnabled) { _isCollisionEnabled = isEnabled; }
     bool IsCollisionEnabled()const { return _isCollisionEnabled; }
-protected:
-    Vector2 GetOwnerPosition() const { return _owner->GetTransform().Position; }
 
 private:
     bool _isCollisionEnabled = true;

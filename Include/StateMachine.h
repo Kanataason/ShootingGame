@@ -35,8 +35,6 @@ public:
         virtual void OnEnter(State* previousState) {}
         //この状態の間、毎フレーム
         virtual void OnUpdate(float deltaTime) {}
-        //今のプロジェクトでは未使用
-        virtual void OnFixedUpdate(float deltaTime) {}
         //この状態から出るとき1回。nextStateは次の状態
         virtual void OnExit(State* nextState) {}
         //この状態の間、毎フレームの描画
@@ -51,8 +49,6 @@ public:
 
         //イベントID → 移る先の状態。この状態にいるときだけ有効な遷移
         std::unordered_map<int, State*> _transitions;
-        //移る先の状態 → イベントID。逆引き用だが、今は使っていない
-        std::unordered_map<State*, int> _reverseTransitions;
 
         //StateMachineだけが呼べる
         //外から直接OnEnterなどを呼ばせないために、privateな入口を一段はさんでいる
@@ -62,10 +58,6 @@ public:
 
         void Update(float deltaTime) {
             OnUpdate(deltaTime);
-        }
-
-        void FixedUpdate(float deltaTime) {
-            OnFixedUpdate(deltaTime);
         }
 
         void Exit(State* nextState) {
@@ -99,11 +91,6 @@ public:
         return _currentState;
     }
 
-    //最後に状態を切り替えたイベントID。今は使っていない
-    int nextStateEventId() const {
-        return _nextStateEventId;
-    }
-
     //状態を生成して登録する
     //同じ型を2回呼ぶと2個できるので、普段はAddTransition経由のGetOrAddStateを使う
     template<class TState>
@@ -134,7 +121,6 @@ public:
 
         TTo& to = GetOrAddState<TTo>();
         from._transitions.emplace(eventId, &to);
-        from._reverseTransitions.emplace(&to, eventId);
     }
 
     //どの状態にいても、eventIdが来たらTToへ移る遷移を登録する
@@ -182,8 +168,7 @@ public:
 
             nextState = anyTransition->second;
         }
-		//遷移先が見つかったので、状態を切り替える
-        _nextStateEventId = eventId;
+        //遷移先が見つかったので、状態を切り替える
         Change(*nextState);
     }
 
@@ -198,12 +183,6 @@ public:
     void Draw() {
         if (_currentState != nullptr) {
             _currentState->Draw();
-        }
-    }
-
-    void FixedUpdate(float deltaTime) {
-        if (_currentState != nullptr) {
-            _currentState->FixedUpdate(deltaTime);
         }
     }
 
@@ -235,7 +214,6 @@ private:
 
     TOwner* _owner;
     State* _currentState = nullptr; //_statesListが所有するため非所有ポインタ
-    int _nextStateEventId = -1;
 
     //すべての状態の実体を持つ
     //_transitionsや_currentStateは状態の生ポインタを持っているので、状態の住所が変わらないことが大事

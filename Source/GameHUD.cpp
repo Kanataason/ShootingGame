@@ -45,12 +45,18 @@ namespace
 	constexpr int WaveInfoX = 440;
 	constexpr int WaveInfoY = 10;
 
+	//難易度の名前（左上）。ボスのHPバー（x=120から）と重ならない位置
+	constexpr int DifficultyX = 10;
+	constexpr int DifficultyY = 10;
+	constexpr int DifficultyColor = 0xAAAAAA;
+
 	//WAVEなどの大きい文字
 	constexpr int BannerY = 180;
 	constexpr double BannerScale = 3.0;   //拡大率
 	constexpr float BannerShowTime = 2.0f;//表示時間
 	constexpr float BannerFadeTime = 0.5f;//フェードアウトの時間
 
+	//HUDに出す強化の名前
 	const char* GetBuffName(BuffType type)
 	{
 		switch (type)
@@ -63,6 +69,7 @@ namespace
 		default:                return "";
 		}
 	}
+	//方向キーを矢印の文字にする。文字コードはShift-JISなので、全角の矢印をそのまま描ける
 	const char* GetArrowText(InputKeyName key)
 	{
 		switch (key)
@@ -83,6 +90,9 @@ void GameHUD::Initialize(const ServiceLocator& locator)
 
 void GameHUD::Draw() const
 {
+	//後に描いたものが上に重なるので、重ねたいものほど後ろに書く
+	//今どの難易度で遊んでいるかを、邪魔にならない左上に小さく出す。ボス戦でも出し続ける
+	DrawString(DifficultyX, DifficultyY, _difficultyName.c_str(), DifficultyColor);
 	DrawPlayerHp();
 	DrawHeat();
 	DrawBossInfo();
@@ -136,6 +146,7 @@ void GameHUD::DrawHeat() const
 {
 	float ratio = ToRatio(_heat, _maxHeat);
 	//オーバーヒート中は赤、7割以上はオレンジ、通常は黄
+	//オーバーヒートする前に、色で「そろそろ止める」と気づけるようにする
 	int color = _isOverHeat ? 0xFF0000
 		: (ratio >= HeatWarningRatio) ? 0xFF8800
 		: 0xFFFF00;
@@ -146,9 +157,11 @@ void GameHUD::DrawCommandResult()const
 {
 	if (_result == CommandResult::Progress) return;//まだ結果が出ていない
 
+	//結果が出てから表示時間を過ぎたら消す。Updateを持たないので、時刻の差で判定する
 	const float elapsed = Time::GetWorldTime() - _resultTime;
 	if (elapsed >= _resultShowTime)return;
 
+	//成功は緑、ミスは赤、時間切れは灰色にして、文字を読まなくても結果が分かるようにする
 	const char* text = (_result == CommandResult::Completed) ? "SUCCESS!"
 		: (_result == CommandResult::Missed) ? "MISS"
 		: "TIME UP";
@@ -158,15 +171,18 @@ void GameHUD::DrawCommandResult()const
 
 	//だんだん消える。後ろの板も一緒に消す
 	const float fade = 1.0f - elapsed / _resultShowTime;
+	//コマンドの方向列のすぐ上に出す
 	const int y = CommandY - 28;
 	const int width = GetDrawStringWidth(text, static_cast<int>(strlen(text)));
+
+	//敵と重なっても読めるように、文字の幅に合わせた半透明の板を先に敷く
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(CommandBackAlpha * fade));
 	DrawBox(CommandX - CommandBackPadding, y - CommandBackPadding / 2,
 		CommandX + width + CommandBackPadding, y + GetFontSize() + CommandBackPadding / 2, CommandBackColor, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * fade));
 	DrawStringToHandle(CommandX, y, text, color, DX_DEFAULT_FONT_HANDLE);
+	//ほかの描画に半透明が残らないように戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
 }
 
 void GameHUD::DrawCommand() const
@@ -215,10 +231,11 @@ void GameHUD::DrawCommandBack(int lineCount, size_t longest)
 
 void GameHUD::DrawCommandLine(int y, BuffType type, const std::vector<InputKeyName>& sequence, int progress)
 {
+	//左に強化の名前、その右に矢印を等間隔で並べる
 	DrawString(CommandX, y, GetBuffName(type), TextColor);
 	for (size_t index = 0; index < sequence.size(); ++index)
 	{
-		//入力済みの数と比較して色を変える
+		//入力済みは灰色、次に打つものは黄色、まだのものは白にして、どこまで打ったかを分かるようにする
 		const int order = static_cast<int>(index);
 		int color = (order < progress) ? CommandDoneColor
 			: (order == progress) ? CommandNextColor
@@ -229,11 +246,12 @@ void GameHUD::DrawCommandLine(int y, BuffType type, const std::vector<InputKeyNa
 
 void GameHUD::DrawBuffs() const
 {
+	//かかっている強化だけを上から詰めて並べる。かかっていない行は空けない
 	int line = 0;
 	for (size_t index = 0; index < _buffs.size(); ++index)
 	{
 		const BuffSlot& buff = _buffs[index];
-		if (buff.level == 0) continue;
+		if (buff.level == 0) continue;//未強化
 
 		DrawFormatString(BuffX, BuffY + line * BuffLineHeight, TextColor, "%s Lv%d %.1f",
 			GetBuffName(static_cast<BuffType>(index)), buff.level, buff.remaining);

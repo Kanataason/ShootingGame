@@ -3,7 +3,7 @@
 #include "ServiceLocator.h"
 
 
-//タイトル画面。スペースキーでゲームシーンへ進む
+//タイトル画面。上下キーで難易度を選び、スペースキーでゲームシーンへ進む
 class Title : public BaseScene
 {
 public:
@@ -11,6 +11,9 @@ public:
 
 	void Initialize(ServiceLocator& locator)override;
 	void Update(float deltaTime)override;
+private:
+	//選べる難易度を縦に並べ、選んでいるものを目立たせる
+	void DrawDifficulties() const;
 private:
 	//SetFontSizeを毎フレーム呼ぶとフォントが作り直されて重いので、ハンドルを1回だけ作る
 	float _elapsed = 0.0f;

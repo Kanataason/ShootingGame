@@ -50,6 +50,7 @@ C++20 を使っているので、Visual Studio 2019（16.11 以降）/ 2022 / 20
 ・撃つ　　　　　：Enter（押している間、撃ち続ける）
 ・武器の切り替え：R
 ・コマンド入力　：↑ / ↓ / ← / →
+・難易度の選択　：↑ / ↓ または W / S（タイトル）
 ・決定　　　　　：スペース（タイトル、結果画面）
 ・終了　　　　　：ESC
 
@@ -63,6 +64,7 @@ C++20 を使っているので、Visual Studio 2019（16.11 以降）/ 2022 / 20
 ・コマンド入力と強化（攻撃・防御・速度・予測・回復）、攻撃＋速度のコンボ
 ・敵の攻撃予告
 ・時間で進むウェーブ制
+・アイテムのドロップ、難易度（EASY / NORMAL / HARD）
 ・当たり判定（弾と円・四角形の判定、コライダー同士の押し戻し）
 ・弾のオブジェクトプール
 ・JSON によるデータの読み込み
@@ -73,15 +75,15 @@ C++20 を使っているので、Visual Studio 2019（16.11 以降）/ 2022 / 20
 基盤
 　main.cpp / GameManager / GameObject / Component / GameObjectFactory /
 　ServiceLocator.h / StateMachine.h / TimedState.h / Event.h / ObjectPool.h /
-　GameTime / GameWindow / Transform.h / Vector2.h / Primitive.h
+　GameTime / GameWindow / Transform.h / Vector2 / Primitive.h
 
 シーン
 　SceneManager / SceneLoader / BaseScene / Title（GameTitle.h）/ GameScene / GameResult /
-　EnemySpawner
+　EnemySpawner / ItemDropper / GameSettings
 
 プレイヤー
 　PlayerController / PlayerStates / PlayerMovement / PlayerAttack / PlayerStatus /
-　PlayerProvider.h / GunState / GunData.h / PlayerCommand / PlayerBuff
+　PlayerProvider.h / GunState / GunData / PlayerCommand / PlayerBuff / ItemController
 
 敵・ボス
 　EnemyController / EnemyStates / EnemyCommonStates.h / EnemyMovement / EnemyAttack /
@@ -136,16 +138,18 @@ https://www.youtube.com/watch?v=PbtJt5tnnI8
 コンセプトは「撃つ・止めるの判断が生まれるシューティング」です。
 追加開発で、「敵の攻撃を避けながらコマンドを打ち込み、強化を選んで生き残る」遊びを加えました。
 
-・コマンドで選ぶ強化
-　5 秒ごとに、画面の上にコマンドの候補が 3 つ出ます。敵はそのまま動き続けます。
-　候補の 1 文字目を打つと選ばれ、残りの矢印を制限時間内に打ち切ると成功です。
-　打ち間違えると最初からやり直しになり、候補を無視してもかまいません。
-　「今どの強化が必要か」と「避けながら打ち切れるか」の判断が生まれます。
+・アイテムで始まるコマンド
+　雑魚を倒すと、強化の種類ごとに色の違うアイテムを落とします。拾うと、その強化のコマンドが画面の上に出ます。
+　「倒す → アイテム → コマンド → 強化して、また倒す」という流れで、撃つことと打つことがつながります。
+　どの色を取りに行くか、危ない位置でも取りに行くかの判断が生まれます。
+　1 文字目を打つと入力が始まり、残りの矢印を制限時間内に打ち切ると成功です。敵はその間も動き続けます。
+　打ち間違えると最初からやり直しになり、コマンドを無視してもかまいません。
+　落とす確率は 30% で、4 体続けて落ちなかったら次は必ず落とします。ボス戦では上からアイテムが降ってきます。
 ・5 種類の強化
 　攻撃（与えるダメージ増加）、防御（受けるダメージ減少）、速度（移動が速くなる）、
 　予測（敵の攻撃予告がはっきり見える）、回復（その場で HP を 5 回復）があります。
 　回復以外は 15 秒続き、重ねると最大 Lv3 まで上がります。段階が上がるほど矢印が長くなります。
-　候補は毎回 5 種類からランダムに 3 つ選ばれ、HP が 3 割以下のときは回復が必ず入ります。
+　アイテムの種類はランダムで、HP が 3 割以下のときは必ず回復のアイテムになります。
 ・攻撃＋速度のコンボ
 　攻撃と速度が両方かかっている間は、移動しながら撃つとダメージがさらに 1.15 倍になります。
 　止まって撃つと付かないので、「この組み合わせが常に正解」にならないようにしています。
@@ -156,6 +160,11 @@ https://www.youtube.com/watch?v=PbtJt5tnnI8
 ・時間で進むウェーブ
 　Wave 1（40 秒）、Wave 2（50 秒）、Wave 3（60 秒）と進み、ウェーブごとに敵の種類が増え、
 　出る間隔が短くなります。Wave 3 が終わるとボスが出現します。
+・3 つの難易度
+　タイトルで EASY / NORMAL / HARD を選べます。NORMAL を基準に、受けるダメージ、雑魚の出る間隔、
+　アイテムの落ちやすさ、コマンドの制限時間、攻撃予告の時間、ボスの HP だけを倍率で変えています。
+　EASY は「失敗の痛さ」を減らして余裕を増やし、HARD は「避けながら打つ」圧を増やす方向です。
+　倍率は Difficulty.json に書いてあり、どのクラスも難易度の名前ではなく、必要な倍率だけを読みます。
 
 ・ヒートゲージ
 　撃つたびにヒートが溜まり、撃たずにいると冷えます。最大まで溜まるとオーバーヒートし、

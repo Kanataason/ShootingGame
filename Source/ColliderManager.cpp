@@ -37,6 +37,37 @@ namespace
 
         return false;  //未登録の組み合わせ
     }
+
+    //アイテムとプレイヤーが重なっているか。押し戻しはしない
+    //アイテムもプレイヤーも円なので、円どうしだけを見る
+    bool IsTouching(const Collider& item, const Collider& player)
+    {
+        if (item.GetColliderType() != ColliderType::Circle || player.GetColliderType() != ColliderType::Circle)
+            return false;
+
+        const Vector2& itemCenter = item.GetOwner()->GetTransform().Position;
+        const Vector2& playerCenter = player.GetOwner()->GetTransform().Position;
+        const float itemRadius = static_cast<const CircleCollider&>(item).GetRadius();
+        const float playerRadius = static_cast<const CircleCollider&>(player).GetRadius();
+
+        //長さ0の線分と円の判定にして、半径の和で重なりを見る
+        return Collision::CheckCollision(itemCenter, itemRadius, playerRadius, playerCenter, playerCenter);
+    }
+
+    //片方がアイテムなら、拾う処理だけをする。押し戻しとダメージはしない
+    //アイテムどうし、アイテムと敵は何もしない
+    void ResolvePickup(Collider& colliderA, Collider& colliderB)
+    {
+        Collider& item = (colliderA.GetTeam() == Team::Item) ? colliderA : colliderB;
+        Collider& other = (&item == &colliderA) ? colliderB : colliderA;
+        if (!item.IsCollisionEnabled()) return;   //拾われた直後のアイテム
+        if (other.GetTeam() != Team::Player) return;
+        if (!IsTouching(item, other)) return;
+
+        //プレイヤーは拾ったアイテムの種類を読むので、お互いを相手として渡す
+        item.GetOwner()->OnPickup(*other.GetOwner());
+        other.GetOwner()->OnPickup(*item.GetOwner());
+    }
 }
 
 void ColliderManager::Initialize(ServiceLocator& locator)
@@ -63,6 +94,8 @@ void ColliderManager::CheckCollisions(BulletPool& pool)
             //当たり判定が無効なもの、同じチームには当たらないようにする
             if (!targetCollider->IsCollisionEnabled()) { continue; }
             if (targetCollider->GetTeam() == bullet.ownerTeam) { continue; }
+            //アイテムは撃って消せないようにする
+            if (targetCollider->GetTeam() == Team::Item) { continue; }
 
             const Vector2& targetPosition = targetCollider->GetOwner()->GetTransform().Position;
             bool isHit = false;
@@ -110,10 +143,19 @@ void ColliderManager::ResolveCollider()
             Collider* colliderA = colliders[indexA];
             Collider* colliderB = colliders[indexB];
 
-            //当たり判定がないもの、同じチームには当たらないようにする
-            if (!colliderA->IsCollisionEnabled() || !colliderB->IsCollisionEnabled()) { continue; }
+            //同じチームには当たらないようにする
             if (colliderA->GetTeam() == colliderB->GetTeam()) { continue; }
-          
+
+            //アイテムは、被弾後の無敵中でも拾えるようにしたいので、当たり判定の有効・無効を見る前に処理する
+            if (colliderA->GetTeam() == Team::Item || colliderB->GetTeam() == Team::Item)
+            {
+                ResolvePickup(*colliderA, *colliderB);
+                continue;
+            }
+
+            //当たり判定がないものには当たらないようにする
+            if (!colliderA->IsCollisionEnabled() || !colliderB->IsCollisionEnabled()) { continue; }
+
             if (ResolveCollision(*colliderA, *colliderB))
             {
                 float damage = 1.0f;

@@ -22,6 +22,8 @@ private:
 	void BuildEnemy(GameObject& object, const ObjectData& data);
 	//移動・攻撃・HPは雑魚と同じコンポーネントを使い、行動だけBossControllerで変える
 	void BuildBoss(GameObject& object, const ObjectData& data);
+	//コマンドのアイテム。HPも攻撃も持たず、落ちる動きと当たり判定だけ
+	void BuildItem(GameObject& object, const ObjectData& data);
 
 	//サイズをオブジェクトごとに設定、bulletで誰が撃ったかの判断するteamを渡す
 	void SetShapeData(GameObject& gameObject, const ObjectData& objectData,Team team);
@@ -32,7 +34,8 @@ private:
 	{
 		{ ObjectType::Player, &GameObjectFactory::BuildPlayer },
 		{ ObjectType::Enemy,  &GameObjectFactory::BuildEnemy  },
-		{ ObjectType::Boss,&GameObjectFactory::BuildBoss}
+		{ ObjectType::Boss,&GameObjectFactory::BuildBoss},
+		{ ObjectType::Item, &GameObjectFactory::BuildItem }
 	};
 
 	//PlayerをEnemyに知らせるため

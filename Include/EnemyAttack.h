@@ -79,6 +79,8 @@ private:
 	GameWindow* _gameWindow = nullptr;
 	Primitive* _shape = nullptr;
 	
+	float _warnTimeRate = 1.0f;//難易度による、攻撃予告の時間の倍率
+
 	int _bulletColor = 0xFF4466;
 	ShotSetting _gunData{};
 };

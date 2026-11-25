@@ -108,6 +108,12 @@
     <ClCompile Include="Source\EnemySpawner.cpp">
       <Filter>ソース ファイル\Character\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ItemController.cpp">
+      <Filter>ソース ファイル\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ItemDropper.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="Source\BaseScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
@@ -158,6 +164,15 @@
     </ClCompile>
     <ClCompile Include="Source\GameObject.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GunData.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameSettings.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vector2.cpp">
+      <Filter>ソース ファイル\Utillity</Filter>
     </ClCompile>
     <ClCompile Include="Source\PlayerBuff.cpp">
       <Filter>ソース ファイル\Character\Player</Filter>
@@ -376,6 +391,15 @@
     </ClInclude>
     <ClInclude Include="Include\EnemySpawner.h">
       <Filter>ヘッダー ファイル\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ItemController.h">
+      <Filter>ヘッダー ファイル\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ItemDropper.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameSettings.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Include\SoundManager.h">
       <Filter>ヘッダー ファイル\Manager</Filter>

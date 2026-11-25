@@ -6,9 +6,11 @@ void PlayerCommand::Offer(std::vector<CommandCandidate> candidates, float offerT
 	_view = {};
 	_view.phase = CommandPhase::Offer;
 	_view.candidates = std::move(candidates);
+	//残り時間のバーは、remainingをtimeLimitで割って描く
 	_view.remaining = offerTime;
 	_view.timeLimit = offerTime;
 	ResetProgress();
+	//HUDに候補を出させる
 	OnCommandChanged.Invoke(_view);
 }
 

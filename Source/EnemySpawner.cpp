@@ -8,8 +8,10 @@
 void EnemySpawner::Initialize(const ServiceLocator& locator, std::vector<SpawnData> spawnData)
 {
 	_factory = locator.factory;
+	//出した数を数えるために、テンプレートごとに数を持たせて取っておく
 	for (auto& data : spawnData)
 		_entries.push_back({ std::move(data) });
+	//横の位置をランダムにするときの範囲に使う
 	_screenWidth = static_cast<int>(locator.gameWindow->GetBounds().width);
 	ResetTimer();
 }
@@ -38,7 +40,9 @@ void EnemySpawner::Update(float deltaTime, BaseScene& scene)
 	if (entry.data.isRandomX)
 		objectData.transform.Position.x = static_cast<float>(40 + GetRand(_screenWidth - 80));
 
-	scene.Spawn(_factory->CreateObject(objectData));
+	auto object = _factory->CreateObject(objectData);
+	if (_onSpawned) _onSpawned(*object);
+	scene.Spawn(std::move(object));
 }
 
 void EnemySpawner::SetWave(int wave, const WaveData& data)

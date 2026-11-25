@@ -1,6 +1,20 @@
 ﻿#include "PlayerBuff.h"
 #include <algorithm>
 
+int GetBuffColor(BuffType type)
+{
+	//機体の光・オーラ・HUDの文字で同じ色を使い、どの強化かを色だけで分かるようにする
+	switch (type)
+	{
+	case BuffType::Attack:  return 0xFF4444;//赤
+	case BuffType::Defense: return 0x4488FF;//青
+	case BuffType::Speed:   return 0xFFDD00;//黄
+	case BuffType::Predict: return 0xBB66FF;//紫
+	case BuffType::Heal:    return 0x44FF88;//緑
+	default:                return 0xFFFFFF;//Countなど、強化ではないもの
+	}
+}
+
 void PlayerBuff::Apply(BuffType type)
 {
 	//回復は段階を持たない

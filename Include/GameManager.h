@@ -9,6 +9,7 @@
 #include "ColliderManager.h"
 #include "DrawManager.h"
 #include "SoundManager.h"
+#include "GameSettings.h"
 
 #include "ServiceLocator.h"
 
@@ -30,6 +31,8 @@ private:
 	//メンバーは宣言と逆順に破棄される
 	//シーン内のコライダーが破棄時にRegistryを使うので、Registry・Providerはシーンより先に宣言する
 	GameWindow _gameWindow;
+	//シーンをまたいで、タイトルで選んだ難易度を持つ
+	GameSettings _settings;
 
 	PlayerProvider _provider;
 	ColliderRegistry _registry;

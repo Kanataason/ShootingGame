@@ -11,10 +11,14 @@ GameManager::GameManager(HWND hwnd) :_gameWindow(hwnd), _inputManager(_gameWindo
 
 void GameManager::Initialize()
 {
+	//音はシーンをまたいで使うので、最初に1回だけ読み込む
 	JsonLoader loader;
 	const auto& soundJson = loader.LoadJsonData("JsonData/Sound.json");
 	_soundManager.Initialize(loader.LoadSoundData(soundJson));
+	//難易度の一覧も、タイトルで選ぶ前に読んでおく
+	_settings.Initialize(loader.LoadDifficultyTable("JsonData/Difficulty.json"));
 
+	//シーンマネージャーは最初のシーンを作るときにlocatorを渡すので、先にlocatorを作っておく
 	auto context = CreateLocator();
 	_sceneManager.Initialize(_gameObjectFactory,context);
 	_bulletManager.Initialize(context);
@@ -39,6 +43,8 @@ void GameManager::Update(float deltaTime)
 
 ServiceLocator GameManager::CreateLocator()
 {
+	//実体はすべてGameManagerのメンバー。locatorはポインタを配るだけなので、コピーして渡してよい
+	//GameManagerより長く生きるものは無いので、ポインタが無効になることもない
 	ServiceLocator locator{};
 	locator.input = &_inputManager;
 	locator.bulletManager = &_bulletManager;
@@ -49,6 +55,7 @@ ServiceLocator GameManager::CreateLocator()
 	locator.sceneManager = &_sceneManager;
 	locator.factory = &_gameObjectFactory;
 	locator.soundManager = &_soundManager;
+	locator.gameSettings = &_settings;
 
 	return locator;
 }

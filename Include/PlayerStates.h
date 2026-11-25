@@ -114,17 +114,13 @@ namespace PlayerStates
 
     class AttackDisabledState : public PlayerStateBase {};
 
-    //コマンドの待機。時間で候補を出す
+    //コマンドの待機。アイテムを拾ったら候補を出す
     //入る時に、前のコマンドの表示を消す
-    class CommandIdleState : public TimedState<PlayerController>
+    class CommandIdleState : public PlayerStateBase
     {
-    public:
-        CommandIdleState() : TimedState(OfferInterval) {}
     protected:
         void OnEnter(State* previousState) override;
-        void OnTimeUp() override;
-    private:
-        static constexpr float OfferInterval = 5.0f;//次の候補までの秒数
+        void OnUpdate(float deltaTime) override;
     };
 
     //候補の選択待ち。1文字目で入力中へ

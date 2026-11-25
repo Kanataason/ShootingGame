@@ -1,0 +1,28 @@
+{
+    "Default": 1,
+    "Difficulties": [
+        {
+            "Name": "EASY",
+            "DamageTakenRate": 0.6,
+            "SpawnIntervalRate": 1.2,
+            "DropChanceRate": 1.5,
+            "PityCountRate": 0.75,
+            "CommandTimeRate": 1.3,
+            "WarnTimeRate": 1.3,
+            "BossHealthRate": 0.8
+        },
+        {
+            "Name": "NORMAL"
+        },
+        {
+            "Name": "HARD",
+            "DamageTakenRate": 1.3,
+            "SpawnIntervalRate": 0.75,
+            "DropChanceRate": 0.67,
+            "PityCountRate": 1.25,
+            "CommandTimeRate": 0.8,
+            "WarnTimeRate": 0.8,
+            "BossHealthRate": 1.2
+        }
+    ]
+}

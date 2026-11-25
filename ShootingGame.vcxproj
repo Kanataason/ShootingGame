@@ -93,10 +93,15 @@
     <ClCompile Include="Source\EnemyController.cpp" />
     <ClCompile Include="Source\EnemyMovement.cpp" />
     <ClCompile Include="Source\EnemySpawner.cpp" />
+    <ClCompile Include="Source\ItemController.cpp" />
+    <ClCompile Include="Source\ItemDropper.cpp" />
     <ClCompile Include="Source\EnemyStates.cpp" />
     <ClCompile Include="Source\EnemyStatus.cpp" />
     <ClCompile Include="Source\GameManager.cpp" />
     <ClCompile Include="Source\GameObject.cpp" />
+    <ClCompile Include="Source\GunData.cpp" />
+    <ClCompile Include="Source\GameSettings.cpp" />
+    <ClCompile Include="Source\Vector2.cpp" />
     <ClCompile Include="Source\GameObjectFactory.cpp" />
     <ClCompile Include="Source\GameResult.cpp" />
     <ClCompile Include="Source\GameHUD.cpp" />
@@ -143,6 +148,9 @@
     <ClInclude Include="Include\EnemyController.h" />
     <ClInclude Include="Include\EnemyMovement.h" />
     <ClInclude Include="Include\EnemySpawner.h" />
+    <ClInclude Include="Include\ItemController.h" />
+    <ClInclude Include="Include\ItemDropper.h" />
+    <ClInclude Include="Include\GameSettings.h" />
     <ClInclude Include="Include\EnemyStates.h" />
     <ClInclude Include="Include\EnemyStatus.h" />
     <ClInclude Include="Include\Event.h" />

@@ -11,18 +11,7 @@ enum class BuffType
 };
 
 //強化の色。機体とHUDで使う
-inline int GetBuffColor(BuffType type)
-{
-	switch (type)
-	{
-	case BuffType::Attack:  return 0xFF4444;
-	case BuffType::Defense: return 0x4488FF;
-	case BuffType::Speed:   return 0xFFDD00;
-	case BuffType::Predict: return 0xBB66FF;
-	case BuffType::Heal:    return 0x44FF88;
-	default:                return 0xFFFFFF;
-	}
-}
+int GetBuffColor(BuffType type);
 
 //1タイプ分の強化の状態
 struct BuffSlot

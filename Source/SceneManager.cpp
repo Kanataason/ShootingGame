@@ -15,12 +15,14 @@ void SceneManager::Initialize(GameObjectFactory& objectfactory, ServiceLocator& 
 }
 void SceneManager::EntryScene(GameObjectFactory& objectfactory)
 {
+	//シーンの実体はまだ作らず、作り方とJSONのパスだけを名前で引けるように覚えておく
 	const auto& json = _jsonLoader.LoadJsonData("JsonData/Scenes.json");
 	for (auto& root : json.at("Scenes"))
 	{
 		auto data = _jsonLoader.LoadScenes(root);
 		_sceneDataList[data.name] = data;
 	}
+	//最初はタイトル。実際に作るのは最初のUpdate
 	RequestChange(SceneName::EGameTitle);
 }
 

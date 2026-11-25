@@ -39,6 +39,7 @@ private:
 	void SetRandomTargetX()
 	{
 		auto& controller = this->owner();
+		//左右の端から_screenMarginずつ内側の範囲で、横の位置だけを決める。高さは今のまま
 		float range = controller.GetBounds().width - _screenMargin * 2.0f;
 		Vector2 target = controller.GetOwner()->GetTransform().Position;
 		target.x = _screenMargin + static_cast<float>(GetRand(static_cast<int>(range)));
@@ -75,9 +76,11 @@ protected:
 	}
 	void OnUpdate(float deltaTime) override
 	{
+		//間隔が空いたら1回撃ち、次の間隔を数え始める
 		if (_coolDown <= 0.0f)
 		{
 			SetShotInfo(false, _shotCoolDown);
+			//最初の1発だけ長かった間隔を、2発目からは通常の間隔に戻す
 			_interval = _shotCoolDown;
 			Shoot(*this->owner().GetAttack());
 		}

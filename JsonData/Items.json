@@ -1,0 +1,21 @@
+{
+    "Drop": {
+        "Chance": 0.3,
+        "PityCount": 4,
+        "PinchHpRatio": 0.3,
+        "BossMinInterval": 4.0,
+        "BossMaxInterval": 6.0
+    },
+    "Templates": [
+        {
+            "Name": "Item",
+            "Status": {
+                "CharacterType": "Item"
+            },
+            "Transform": {
+                "Position": [ 0, -30, 0 ]
+            },
+            "Radius": 14
+        }
+    ]
+}

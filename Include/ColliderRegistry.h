@@ -3,7 +3,8 @@
 
 class Collider;
 
-enum class Team { Player, Enemy,None };
+//Itemは弾に当たらず、押し戻しもしない。プレイヤーが触れたら拾われる
+enum class Team { Player, Enemy, Item, None };
 
 //シーン中のコライダーのポインタを所持してほかで使えるようにする
 class ColliderRegistry

@@ -13,6 +13,7 @@ namespace
 	//相手の画面のタスクバーを除いた広さに収まる、最大の拡大率を返す
 	double CalcWindowExtendRate()
 	{
+		//画面全体ではなく、タスクバーを除いた作業領域の広さを取る
 		RECT workArea{};
 		SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
 		double workWidth = workArea.right - workArea.left;

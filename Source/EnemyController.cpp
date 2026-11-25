@@ -13,6 +13,7 @@ using namespace EnemyStates;
 
 void EnemyController::Initialize(ServiceLocator& locator)
 {
+	//同じGameObjectの部品を先に集めておく。ステートは毎フレームここから使うので、毎回探さないようにする
 	_status = GetOwner()->GetComponent<EnemyStatus>();
 	_movement = GetOwner()->GetComponent<EnemyMovement>();
 	_attack = GetOwner()->GetComponent<EnemyAttack>();

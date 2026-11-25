@@ -16,20 +16,9 @@ struct Vector2
     Vector2& operator-=(const Vector2& other) { x -= other.x; y -= other.y; return *this; }
     Vector2& operator*=(float scale) { x *= scale; y *= scale; return *this; }
 
-    float Length() const { return std::sqrt(x * x + y * y); } 
-    Vector2 Normalized() const
-    {
-        float length = Length();
-        if (length <= 0.0f)
-            return { 0.0f, 0.0f };
-        return { x / length, y / length };
-    }
-
+    float Length() const { return std::sqrt(x * x + y * y); }
+    //長さ1にした向き。長さが0なら(0, 0)
+    Vector2 Normalized() const;
     //オーバーロードで長さがわかっているバージョンを作ることで無駄な計算を削減
-    Vector2 Normalized(float length)const
-    {
-        if(length <= 0.0f)
-            return { 0.0f, 0.0f };
-        return { x / length, y / length };
-    }
+    Vector2 Normalized(float length)const;
 };

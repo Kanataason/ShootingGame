@@ -24,6 +24,9 @@ public:
         _owner = owner;
     }
     virtual void OnColliderEnter(float damage) {};
+    //プレイヤーとアイテムが触れたとき、両方に呼ばれる。otherは触れた相手
+    //当たり判定はどちらが何をするかを知らず、それぞれが必要な分だけ相手を見る
+    virtual void OnPickup(GameObject& other) {};
 protected:
     GameObject* _owner = nullptr;
 };

@@ -81,6 +81,7 @@ namespace BossStates
 	void DeadState::OnDraw()
 	{
 		//雑魚より大きく見せるため、位置と時間をずらしてエフェクトを重ねる
+		//経過時間から少しずつ引いて渡すので、後の輪ほど遅れて広がり始める（マイナスの間はまだ出ない）
 		const float elapsed = GetElapsed();
 		const Vector2& position = owner().GetOwner()->GetTransform().Position;
 		EffectUtillity::DrawEffect(elapsed, _effectTime, 0xFF00FF, position);

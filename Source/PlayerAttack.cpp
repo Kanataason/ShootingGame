@@ -50,12 +50,13 @@ void PlayerAttack::LongShot(bool isMoving)
 }
 void PlayerAttack::SpreadShot(bool isMoving)
 {
-
+    //全部の弾を同じ位置から撃つ。強化の倍率は1回分まとめて計算する
     Vector2 firePosition = GetOwner()->GetTransform().Position;
     const ShotSetting shotData = GetBuffedShotData(isMoving);
 
     for (int bulletNumber = 0; bulletNumber < shotData.bulletCount; ++bulletNumber)
     {
+        //1発ずつ向きをランダムにして、毎回違う広がり方にする
         Vector2 bulletDirection = GetRandomDirection();
 
         _bulletManager->FireBullet(firePosition, bulletDirection *shotData.bulletSpeed,

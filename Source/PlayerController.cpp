@@ -13,6 +13,8 @@
 #include "Collider.h"
 #include "DrawManager.h"
 #include "EffectUtillity.h"
+#include "ItemController.h"
+#include "GameSettings.h"
 
 #include "PlayerStates.h"
 
@@ -39,6 +41,7 @@ namespace
 
 void PlayerController::Initialize(ServiceLocator& locator)
 {
+	//同じGameObjectの部品を先に集めておく。ステートは毎フレームここから使うので、毎回探さないようにする
 	_movement = GetOwner()->GetComponent<PlayerMovement>();
 	_attack = GetOwner()->GetComponent<PlayerAttack>();
 	_status = GetOwner()->GetComponent<PlayerStatus>();
@@ -46,13 +49,16 @@ void PlayerController::Initialize(ServiceLocator& locator)
 	_command = GetOwner()->GetComponent<PlayerCommand>();
 	_collider = GetOwner()->GetComponent<Collider>();
 
+	//HPの変化を受け取れるようにしてから、ステートマシンを始める
 	SubScribeEvents();
 
 	InitializeStateMachine();
 
+	//ゲーム全体で1つのサービス。音・入力・描画の登録に使う
 	_soundManager = locator.soundManager;
 	_input = locator.input;
 	_drawManager = locator.drawManager;
+	_commandTimeRate = locator.gameSettings->GetDifficulty().commandTimeRate;
 }
 void PlayerController::SubScribeEvents()
 {
@@ -109,13 +115,31 @@ void PlayerController::Update(float deltaTime)
 		_commandState.Dispatch(CommandEvent::EventCommandStop);
 	}
 
-
-
+	//入力はフレームの最初に1回だけ読み、3つのステートマシンで同じものを使う
+	//ステートごとに読むと、同じフレームでも結果が食い違うことがあるため
 	_currentInput = ReadInput();
 	_normalState.Update(deltaTime);
 	_attackState.Update(deltaTime);
 	_commandState.Update(deltaTime);
 }
+void PlayerController::OnPickup(GameObject& item)
+{
+	if (_isDead) return;
+	//触れた相手がアイテムでなければ何もしない
+	const ItemController* itemController = item.GetComponent<ItemController>();
+	if (itemController == nullptr) return;
+
+	_requestedBuffs.push_back(itemController->GetBuffType());
+}
+std::optional<BuffType> PlayerController::PopRequestedBuff()
+{
+	if (_requestedBuffs.empty()) return std::nullopt;
+
+	const BuffType type = _requestedBuffs.front();
+	_requestedBuffs.pop_front();
+	return type;
+}
+
 void PlayerController::Draw()
 {
 	//本体・点滅・撃破エフェクトの描き分けはステートが行う
@@ -174,6 +198,8 @@ int PlayerController::GetBodyColor() const
 		return GetBuffColor(isAttackTurn ? BuffType::Attack : BuffType::Speed);
 	}
 
+	//一番段階が高い強化の色にする。同じ段階なら、先に調べたタイプのまま（>で比べているため）
+	//何もかかっていなければ-1のままで、呼ぶ側は光らせない
 	int bestLevel = 0;
 	int color = -1;
 	for (size_t index = 0; index < static_cast<size_t>(BuffType::Count); ++index)
@@ -203,11 +229,14 @@ PlayerInput PlayerController::ReadInput()const
 {
 	PlayerInput input;
 
+	//移動は押している間ずっと。左右を同時に押したら打ち消し合って止まる
+	//画面の座標は下が+なので、上キーはyを減らす
 	if (_input->GetKey(rightKey)) input.direction.x += 1.0f;
 	if (_input->GetKey(leftKey))  input.direction.x -= 1.0f;
 	if (_input->GetKey(upKey))    input.direction.y -= 1.0f;   
 	if (_input->GetKey(downKey))  input.direction.y += 1.0f;
 
+	//射撃は押している間撃ち続け、武器の切り替えは押した瞬間だけ（押しっぱなしで回り続けないように）
 	input.isShotHeld = _input->GetKey(shotKey);
 	input.isChangePressed = _input->GetKeyDown(changeKey);
 
@@ -220,6 +249,8 @@ InputCommand PlayerController::ReadInputCommand()const
 {
 	InputCommand input;
 
+	//矢印は押した瞬間だけ拾う。押しっぱなしで同じ方向が何回も入らないようにするため
+	//同じフレームに複数押されたときは全部入れ、順番の入れ替わりはPlayerCommandの猶予で吸収する
 	if (_input->GetKeyDown(leftArrowKey))input.commands.push_back(InputKeyName::left);
 	if (_input->GetKeyDown(rightArrowKey))input.commands.push_back(InputKeyName::right);
 	if (_input->GetKeyDown(upArrowKey))input.commands.push_back(InputKeyName::up);

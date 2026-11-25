@@ -22,6 +22,8 @@ public:
 
 	//今のウェーブと、そのウェーブの残り秒数
 	void SetWave(int wave, int waveCount, float remaining) { _wave = wave; _waveCount = waveCount; _waveRemaining = remaining; }
+	//左上に出す難易度の名前
+	void SetDifficultyName(std::string name) { _difficultyName = std::move(name); }
 	//画面の真ん中に大きい文字を出す（WAVE、WARNING）
 	void ShowBanner(std::string text, int color) { _banner = std::move(text); _bannerColor = color; _bannerTime = Time::GetWorldTime(); }
 
@@ -64,6 +66,8 @@ private:
 	int _wave = 0;
 	int _waveCount = 0;
 	float _waveRemaining = 0.0f;
+
+	std::string _difficultyName;
 
 	std::string _banner;
 	int _bannerColor = 0xFFFFFF;

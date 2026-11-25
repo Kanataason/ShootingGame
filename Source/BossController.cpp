@@ -38,6 +38,7 @@ void BossController::SubScribeEvents()
 
 void BossController::InitializeStateMachine()
 {
+	//移動：登場 → 第一形態 → 無敵（形態移行） → 第二形態。撃破はどこからでも
 	_normalState.AddTransition<EnterState, AliveState>(LifeEvent::EventEntered);
 	_normalState.AddTransition<AliveState, InvincibleState>(LifeEvent::EventInvincible);
 	_normalState.AddTransition<InvincibleState,SecondForm>(LifeEvent::EventSecondForm);
@@ -50,6 +51,7 @@ void BossController::InitializeStateMachine()
 	_attackState.AnyAddTransition<AttackDisabledState>(AttackEvent::EventAttackStop);
 	_attackState.AnyAddTransition<SwirlShotState>(AttackEvent::EventSwirlShot);
 
+	//登場中は撃たない。登場が終わるとEnterStateがStartAttackを呼ぶ
 	_attackState.Start<AttackDisabledState>();
 	_normalState.Start<EnterState>();
 }
@@ -74,6 +76,7 @@ void BossController::Update(float deltaTime)
 		_attackState.Dispatch(AttackEvent::EventAttackStop);
 	}
 
+	//攻撃の種類を切り替えてから、移動と攻撃のステートを進める
 	UpdateAttackRotation(deltaTime);
 	_normalState.Update(deltaTime);
 	_attackState.Update(deltaTime);

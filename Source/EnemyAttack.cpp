@@ -6,6 +6,7 @@
 
 #include "GameWindow.h"
 #include "GameObject.h"
+#include "GameSettings.h"
 
 #include <algorithm>
 #include <array>
@@ -29,6 +30,7 @@ void EnemyAttack::Initialize(ServiceLocator& locator)
 	_bulletManager = locator.bulletManager;
 	_gameWindow = locator.gameWindow;
 	_provider = locator.playerProvider;
+	_warnTimeRate = locator.gameSettings->GetDifficulty().warnTimeRate;
 }
 
 void EnemyAttack::InitializeShotSetting(int attackType)
@@ -77,6 +79,7 @@ std::vector<Vector2> EnemyAttack::GetReflectDirections() const
 	int bulletCount = _gunData.bulletCount;
 	if (!CanShoot() || bulletCount <= 0) return {};
 
+	//遠い側の壁へ向けた扇の範囲。遠い壁に撃つと、跳ね返った弾が画面を横切る距離が長くなる
 	Vector2 angleRange = GetNearerHorizontalAngle();
 
 	//1発なら中央、2発以上なら両端を含めて均等に並べる
@@ -144,7 +147,8 @@ void EnemyAttack::DrawWarning(const std::vector<Vector2>& directions, float rati
 }
 float EnemyAttack::GetWarnTime() const
 {
-	return WarnTimes[GetPredictLevel()];
+	//予測の段階で決まる時間に、難易度の倍率を掛ける。Hardでは予告が遅く出て、避ける余裕が減る
+	return WarnTimes[GetPredictLevel()] * _warnTimeRate;
 }
 
 bool EnemyAttack::CanShoot() const

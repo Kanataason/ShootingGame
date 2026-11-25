@@ -37,6 +37,7 @@ namespace
 	{
 		{"Player",ObjectType::Player},
 		{"Enemy",ObjectType::Enemy},
+		{"Item",ObjectType::Item},
 		{"Boss",ObjectType::Boss}
 	};
 	const std::unordered_map<std::string, CharacterType> characterTypeTable =
@@ -45,7 +46,8 @@ namespace
 		{"MoveEnemy",CharacterType::MoveEnemy},
 		{"ReflectShotEnemy",CharacterType::ReflectShotEnemy},
 		{"SpreadEnemy",CharacterType::SpreadEnemy},
-		{"Boss",CharacterType::Boss}
+		{"Boss",CharacterType::Boss},
+		{"Item",CharacterType::Item}
 	};
 
 	const std::unordered_map<CharacterType ,std::function<SizeData(const json& root)>> readSizeTable =
@@ -54,7 +56,8 @@ namespace
 		{CharacterType::ReflectShotEnemy,JsonLoader::LoadBoxMinAndMax},
 		{CharacterType::MoveEnemy,JsonLoader::LoadRadius},
 		{CharacterType::SpreadEnemy,JsonLoader::LoadBoxMinAndMax},
-		{CharacterType::Boss,JsonLoader::LoadBoxMinAndMax}
+		{CharacterType::Boss,JsonLoader::LoadBoxMinAndMax},
+		{CharacterType::Item,JsonLoader::LoadRadius}
 	};
 	const std::unordered_map<std::string, MovePattern> movePatternTable =
 	{
@@ -84,6 +87,7 @@ namespace
 json JsonLoader::LoadJsonData(const std::string& assetPath)const
 {
 	std::ifstream file(assetPath);
+	//ファイルが無いまま進むと、後で原因の分かりにくい落ち方をするので、ここで止める
 	if (!file.is_open())
 	{
 		throw std::runtime_error("Failed to open json file.");
@@ -95,6 +99,7 @@ json JsonLoader::LoadJsonData(const std::string& assetPath)const
 
 SceneData JsonLoader::LoadScenes(const json& root)const
 {
+	//名前とファイルのどちらかが無いとシーンを作れないので、どちらも必須にする
 	if (!root.contains("SceneName"))
 		throw std::runtime_error("Not find SceneName.");
 
@@ -114,6 +119,7 @@ ObjectData  JsonLoader::LoadObjectData(const json& root)const
 {
 	ObjectData data{};
 
+	//Nameで、どの組み立て処理を使うかが決まるので必須にする
 	if (!root.contains("Name"))
 		throw std::runtime_error("Not find Name");
 
@@ -123,10 +129,11 @@ ObjectData  JsonLoader::LoadObjectData(const json& root)const
 
 	data.statusData = LoadStatusData(root.at("Status"));
 
-
+	//攻撃しないもの（アイテムなど）は書かなくてよい
 	if (root.contains("AttackType"))
 		LoadAttackType(root, data);
 
+	//当たり判定の形（円か四角か）はキャラクターの種類で決まるので、種類ごとの読み方を表で引く
 	auto it = readSizeTable.find(data.statusData.characterType);
 	if (it == readSizeTable.end())
 	{
@@ -145,8 +152,10 @@ std::vector<SpawnData> JsonLoader::LoadSpawnData(const std::string& path) const
 	std::vector<SpawnData> result;
 	for (const auto& templateRoot : root.at("Templates"))
 	{
+		//見た目や強さはシーンに置くオブジェクトと同じ形で読み、出し方の設定だけを足す
 		SpawnData data;
 		data.objectData = LoadObjectData(templateRoot);
+		//出し方の設定は書かなくてもよいように、既定値を入れる
 		data.isRandomX = templateRoot.value("RandomX", true);
 		data.maxCount = templateRoot.value("MaxCount", -1);
 		data.firstWave = templateRoot.value("FirstWave", 1);
@@ -164,6 +173,7 @@ std::vector<WaveData> JsonLoader::LoadWaveData(const std::string& path) const
 	{
 		for (const auto& waveRoot : root.at("Waves"))
 		{
+			//書いていない項目はWaveDataの既定値を使う。アイテムのウェーブはDurationを書かない
 			WaveData data;
 			data.duration = waveRoot.value("Duration", data.duration);
 			data.minInterval = waveRoot.value("MinInterval", data.minInterval);
@@ -174,6 +184,52 @@ std::vector<WaveData> JsonLoader::LoadWaveData(const std::string& path) const
 	//ウェーブが無いと進まないので1つ入れる
 	if (result.empty()) result.push_back(WaveData{});
 	return result;
+}
+
+ItemDropData JsonLoader::LoadItemDropData(const std::string& path) const
+{
+	const json root = LoadJsonData(path);
+
+	//書いていない項目はItemDropDataの既定値を使う
+	ItemDropData data;
+	if (!root.contains("Drop")) return data;
+
+	const json& dropRoot = root.at("Drop");
+	data.dropChance = dropRoot.value("Chance", data.dropChance);
+	data.pityCount = dropRoot.value("PityCount", data.pityCount);
+	data.pinchHpRatio = dropRoot.value("PinchHpRatio", data.pinchHpRatio);
+	data.bossFall.minInterval = dropRoot.value("BossMinInterval", data.bossFall.minInterval);
+	data.bossFall.maxInterval = dropRoot.value("BossMaxInterval", data.bossFall.maxInterval);
+	return data;
+}
+
+DifficultyTable JsonLoader::LoadDifficultyTable(const std::string& path) const
+{
+	const json root = LoadJsonData(path);
+
+	DifficultyTable table;
+	for (const auto& difficultyRoot : root.at("Difficulties"))
+	{
+		//書いていない倍率はDifficultyDataの既定値（1）のままにして、Normalは名前だけで済むようにする
+		DifficultyData data;
+		data.name = difficultyRoot.value("Name", data.name);
+		data.damageTakenRate = difficultyRoot.value("DamageTakenRate", data.damageTakenRate);
+		data.spawnIntervalRate = difficultyRoot.value("SpawnIntervalRate", data.spawnIntervalRate);
+		data.dropChanceRate = difficultyRoot.value("DropChanceRate", data.dropChanceRate);
+		data.pityCountRate = difficultyRoot.value("PityCountRate", data.pityCountRate);
+		data.commandTimeRate = difficultyRoot.value("CommandTimeRate", data.commandTimeRate);
+		data.warnTimeRate = difficultyRoot.value("WarnTimeRate", data.warnTimeRate);
+		data.bossHealthRate = difficultyRoot.value("BossHealthRate", data.bossHealthRate);
+		table.difficulties.push_back(std::move(data));
+	}
+	//難易度が1つも無いと選べないので、ここで止める
+	if (table.difficulties.empty())
+		throw std::runtime_error("Difficulty.json has no Difficulties.");
+
+	//範囲外の番号が書かれていたら、先頭にする
+	table.defaultIndex = root.value("Default", static_cast<size_t>(0));
+	if (table.defaultIndex >= table.difficulties.size()) table.defaultIndex = 0;
+	return table;
 }
 
 ObjectData JsonLoader::LoadBossData(const std::string& path) const
@@ -212,6 +268,7 @@ std::vector<SoundData> JsonLoader::LoadSoundData(const json& root)const
 	for(const auto& soundRoot : root.at("Sounds"))
 	{
 		SoundData data{};
+		//Nameで、コードから鳴らすときのSoundIdが決まるので必須にする
 		if (!soundRoot.contains("Name"))
 			throw std::runtime_error(
 				"Not Find Name: "
@@ -219,11 +276,14 @@ std::vector<SoundData> JsonLoader::LoadSoundData(const json& root)const
 
 		data.id = ToSoundId(soundRoot.at("Name").get<std::string>());
 
+		//ファイル名に日本語があるので、DxLibが読める文字コードに直してから持つ
 		if (soundRoot.contains("Path"))
 			data.path = ToShiftJis(soundRoot.at("Path").get<std::string>());
 
+		//音量は0〜255。書いていなければ最大
 		data.volume = soundRoot.value("Volume", 255);
 
+		//同じ音を重ねて鳴らせる数。連射の音などは増やす
 		data.bufferNum = soundRoot.value("BufferNum", 1);
 
 		dataList.push_back(data);
@@ -293,6 +353,7 @@ SizeData JsonLoader::LoadRadius(const json& root)
 {
 	SphereData data{};
 
+	//半径が無いと当たり判定が作れないので必須にする
 	if(!root.contains("Radius"))
 		throw std::runtime_error("Not find Radius");
 		
@@ -304,18 +365,23 @@ StatusData JsonLoader::LoadStatusData(const json& root)const
 {
 	StatusData data{};
 
+	//どれも書かなくてよい。書いていないものはStatusDataの既定値のまま
+	//キャラクターによって使う項目が違うため（アイテムはCharacterTypeだけ）
 	if (root.contains("CharacterType"))
 		data.characterType = ToCharacterType(root.at("CharacterType").get<std::string>());
 
 	if (root.contains("Health"))
 		data.health = root.at("Health").get<float>();
 
+	//JSONでは0か1で書く
 	if (root.contains("IsMove"))
 		data.isMove = root.at("IsMove").get<int>();
 
+	//画面にとどまるか、通り抜けて消えるか
 	if (root.contains("MovePattern"))
 		data.movePattern = ToMovePattern(root.at("MovePattern").get<std::string>());
 
+	//画像の読み込みはGameObjectFactoryで行うので、ここではパスだけ持つ
 	if(root.contains("ImagePath"))
 		data.imagePath = root.at("ImagePath").get<std::string>();
 
@@ -326,6 +392,7 @@ SizeData JsonLoader::LoadBoxMinAndMax(const json& root)
 {
 	BoxData data{};
 
+	//[幅の半分, 高さの半分] の形で書く。形が違うときは大きさ0のまま
 	if (root.contains("HalfSize") &&
 		root.at("HalfSize").is_array() &&
 		root.at("HalfSize").size() >= 2)

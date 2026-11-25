@@ -4,9 +4,11 @@
 
 void GunState::SetGunState(float coolDown, bool shotFlag, bool changeFlag)
 {
+	//Clampで上限に使うので、間隔の最大も同じ値にする
 	_maxCoolDown = coolDown;
 
 	_coolDown = coolDown;
+	//武器を変えた直後に、もう一度すぐ変わらないよう待ち時間を入れる
 	_changeCoolDown = _maxChangeTime;
 	_isChangeFlag = changeFlag;
 	_isShotFlag = shotFlag;

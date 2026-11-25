@@ -1,4 +1,6 @@
 ﻿#include <string>
+#include <algorithm>
+#include <cmath>
 
 #include "GameScene.h"
 #include "GameObject.h"
@@ -13,12 +15,38 @@
 #include "PlayerBuff.h"
 #include "PlayerCommand.h"
 #include "EnemyStatus.h"
+#include "ItemController.h"
 #include "SceneManager.h"
 #include "DrawManager.h"
+#include "GameSettings.h"
+
+namespace
+{
+	//出る間隔に倍率を掛けたウェーブ
+	WaveData ScaleInterval(WaveData wave, float rate)
+	{
+		wave.minInterval *= rate;
+		wave.maxInterval *= rate;
+		return wave;
+	}
+
+	//アイテムの落とし方に、難易度の倍率を掛ける
+	ItemDropData ApplyDifficulty(ItemDropData dropData, const DifficultyData& difficulty)
+	{
+		//確率は1を超えないように、天井は1体より少なくならないようにする
+		dropData.dropChance = (std::min)(dropData.dropChance * difficulty.dropChanceRate, 1.0f);
+		dropData.pityCount = (std::max)(static_cast<int>(std::lround(dropData.pityCount * difficulty.pityCountRate)), 1);
+		//ボス戦で降る間隔は、落ちやすい難易度ほど短くする
+		dropData.bossFall = ScaleInterval(dropData.bossFall, 1.0f / difficulty.dropChanceRate);
+		return dropData;
+	}
+}
 
 void GameScene::Initialize(ServiceLocator& locator)
 {
 	BaseScene::Initialize(locator);
+	//タイトルで選んだ難易度。シーンの間は変わらないので、コピーして持っておく
+	_difficulty = locator.gameSettings->GetDifficulty();
 
 	_background.Initialize(_scrollSpeed);
 	JsonLoader loader;
@@ -26,7 +54,24 @@ void GameScene::Initialize(ServiceLocator& locator)
 	_bossData = loader.LoadBossData("JsonData/Boss.json");
 	_spawner.Initialize(locator,loader.LoadSpawnData("JsonData/Spawn.json"));
 	_waves = loader.LoadWaveData("JsonData/Spawn.json");
+	//出した雑魚は、倒されたらアイテムを落とせるように見張る
+	_spawner.SetOnSpawned([this](GameObject& enemy) { WatchEnemyDeath(enemy); });
+
+	//アイテムも敵と同じ形のJSONなので、同じ読み込みを使う
+	std::vector<SpawnData> itemTemplates = loader.LoadSpawnData("JsonData/Items.json");
+	if (itemTemplates.empty())
+		throw std::runtime_error("Items.json has no Templates.");
+	const ItemDropData dropData = ApplyDifficulty(loader.LoadItemDropData("JsonData/Items.json"), _difficulty);
+	_itemDropper.Initialize(locator, itemTemplates.front().objectData, dropData);
+
+	//ボス戦で降らせる分。ボスが出るまでは止めておく
+	_bossItemFall = dropData.bossFall;
+	_itemSpawner.Initialize(locator, std::move(itemTemplates));
+	_itemSpawner.SetOnSpawned([this](GameObject& item) { SetFallingItemType(item); });
+	_itemSpawner.SetActive(false);
+
 	_hud.Initialize(locator);
+	_hud.SetDifficultyName(_difficulty.name);
 
 	locator.soundManager->PlayBgm(SoundId::BgmGame);
 
@@ -39,7 +84,8 @@ void GameScene::StartWave(size_t index)
 	_waveElapsed = 0.0f;
 
 	const int waveNumber = static_cast<int>(index) + 1;//画面に出すのは1から
-	_spawner.SetWave(waveNumber, _waves[index]);
+	//難易度で、雑魚が出る間隔だけを変える。ウェーブの長さは変えない
+	_spawner.SetWave(waveNumber, ScaleInterval(_waves[index], _difficulty.spawnIntervalRate));
 	_hud.ShowBanner("WAVE " + std::to_string(waveNumber), GameHUD::WaveBannerColor);
 }
 void GameScene::UpdateWave(float deltaTime)
@@ -63,11 +109,65 @@ void GameScene::UpdateWave(float deltaTime)
 	//最後のウェーブが終わったら、雑魚を止めてボスを出す
 	_isBossSpawned = true;
 	_spawner.SetActive(false);
+	//雑魚がいなくなるとアイテムが落ちないので、代わりに上から降らせ始める
+	_itemSpawner.SetWave(1, _bossItemFall);
+	_itemSpawner.SetActive(true);
 	_hud.ShowBanner("WARNING", GameHUD::BossBannerColor);
 	SpawnBoss();
 }
+void GameScene::WatchEnemyDeath(GameObject& enemy)
+{
+	auto* enemyStatus = enemy.GetComponent<EnemyStatus>();
+	if (enemyStatus == nullptr) return;
+
+	//HPが0以下になった通知で、倒されたと分かる
+	//死亡演出中はダメージを受けないので、0以下の通知は1体につき1回だけ来る
+	//画面の下へ通り抜けて消えた敵は、HPが減らないので落とさない
+	enemyStatus->OnHealthChanged.Subscribe([this, &enemy](float hp, float)
+		{
+			if (hp <= 0.0f) DropItem(enemy.GetTransform().Position);
+		});
+}
+void GameScene::DropItem(const Vector2& position)
+{
+	float hp = 0.0f;
+	float maxHp = 0.0f;
+	GetPlayerHp(hp, maxHp);
+
+	//当たり判定の途中で呼ばれるので、シーンにはSpawnで予約だけして、次のUpdateの最後に加える
+	if (auto item = _itemDropper.TryDrop(position, hp, maxHp))
+		Spawn(std::move(item));
+}
+void GameScene::SetFallingItemType(GameObject& item)
+{
+	auto* itemController = item.GetComponent<ItemController>();
+	if (itemController == nullptr) return;
+
+	float hp = 0.0f;
+	float maxHp = 0.0f;
+	GetPlayerHp(hp, maxHp);
+	itemController->SetBuffType(_itemDropper.ChooseType(hp, maxHp));
+}
+void GameScene::GetPlayerHp(float& hp, float& maxHp) const
+{
+	//プレイヤーが見つからないときは、ピンチ扱いにならない値にする
+	hp = 1.0f;
+	maxHp = 1.0f;
+	GameObject* player = _locator.playerProvider->GetPlayer();
+	if (player == nullptr) return;
+	if (const auto* playerStatus = player->GetComponent<PlayerStatus>())
+	{
+		hp = playerStatus->GetHealth();
+		maxHp = playerStatus->GetMaxHealth();
+	}
+}
+
 void GameScene::SubScribeEvents()
 {
+	//シーンに最初から置いてある雑魚も、倒されたらアイテムを落とすようにする
+	for (auto& object : _objects)
+		WatchEnemyDeath(*object);
+
 	//プレイヤー：シーンの初期化時に1回だけ
 	GameObject* player = _locator.playerProvider->GetPlayer();
 	if (!player) return;
@@ -115,7 +215,10 @@ void GameScene::SubScribeEvents()
 
 void GameScene::SpawnBoss()
 {
-	auto boss = _locator.factory->CreateObject(_bossData);
+	//読み込んだデータは変えずに、出すときのコピーにだけ難易度の倍率を掛ける
+	ObjectData bossData = _bossData;
+	bossData.statusData.health *= _difficulty.bossHealthRate;
+	auto boss = _locator.factory->CreateObject(bossData);
 
 	_locator.soundManager->PlayBgm(SoundId::BgmBoss);
 	//ボス：生成したときに1回だけ
@@ -142,8 +245,11 @@ void GameScene::Update(float deltaTime)
 	//背景スクロールはUpdateの最初にやる。DrawはDrawManagerに登録する
 	_background.Update(deltaTime);
 	_locator.drawManager->Register(DrawLayer::Background, [this] { _background.Draw(); });
+	//出したものはSpawnで予約され、下のBaseScene::Updateの最後にシーンへ加わる
 	_spawner.Update(deltaTime, *this);
+	_itemSpawner.Update(deltaTime, *this);
 	UpdateWave(deltaTime);
 
+	//シーン上のオブジェクトを全部動かし、消すものを消して、予約したものを加える
 	BaseScene::Update(deltaTime);
 }

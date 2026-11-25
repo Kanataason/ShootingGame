@@ -25,6 +25,10 @@ public:
 	std::vector<SpawnData> LoadSpawnData(const std::string& path) const;
 	//ウェーブの並びを読み込む。Wavesが無ければ、既定値のウェーブを1つだけ返す
 	std::vector<WaveData> LoadWaveData(const std::string& path) const;
+	//アイテムの落とし方を読み込む。Dropが無ければ既定値
+	ItemDropData LoadItemDropData(const std::string& path) const;
+	//選べる難易度を読み込む。書いていない倍率は1（Normalと同じ）
+	DifficultyTable LoadDifficultyTable(const std::string& path) const;
 
 	//ボス1体分のデータを読み込む
 	ObjectData LoadBossData(const std::string& path) const;
