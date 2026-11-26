@@ -101,6 +101,7 @@
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\GunData.cpp" />
     <ClCompile Include="Source\GameSettings.cpp" />
+    <ClCompile Include="Source\ScreenShake.cpp" />
     <ClCompile Include="Source\Vector2.cpp" />
     <ClCompile Include="Source\GameObjectFactory.cpp" />
     <ClCompile Include="Source\GameResult.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Include\ItemController.h" />
     <ClInclude Include="Include\ItemDropper.h" />
     <ClInclude Include="Include\GameSettings.h" />
+    <ClInclude Include="Include\ScreenShake.h" />
     <ClInclude Include="Include\EnemyStates.h" />
     <ClInclude Include="Include\EnemyStatus.h" />
     <ClInclude Include="Include\Event.h" />

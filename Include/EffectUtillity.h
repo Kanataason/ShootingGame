@@ -15,4 +15,11 @@ public:
 	//強化中のオーラ。段階が高いほど濃く太い
 	//timeは経過時間。Time::GetWorldTime()を渡す
 	static void DrawAura(const Vector2& center, float radius, int color, int level, float time);
+
+	//弾が当たったときに一瞬白く光らせる時間（秒）
+	static constexpr float HitFlashTime = 0.06f;
+	//hitTimeは当たったときのTime::GetWorldTime()。まだ光らせる時間内ならtrue
+	static bool IsHitFlashing(float hitTime);
+	//画像を加算で上から重ねて、白っぽく光って見せる。普通に描いた後に呼ぶ
+	static void DrawHitFlash(const Vector2& center, int image);
 };

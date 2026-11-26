@@ -10,6 +10,7 @@ class GameObjectFactory;
 class DrawManager;
 class SoundManager;
 class GameSettings;
+class ScreenShake;
 
 //各クラスが共通で使うサービスへの参照をまとめたもの
 //実体はGameManagerが持つ
@@ -25,4 +26,5 @@ struct ServiceLocator
 	DrawManager* drawManager;
 	SoundManager* soundManager;
 	GameSettings* gameSettings;
+	ScreenShake* screenShake;
 };

@@ -65,14 +65,18 @@ void Title::Update(float deltaTime)
 
 void Title::DrawDifficulties() const
 {
+	//一覧はDifficulty.jsonに書いた順に並べる。数が増えても、ここは変えずに済む
 	const GameSettings* settings = _locator.gameSettings;
 	const auto& difficulties = settings->GetDifficulties();
 	for (size_t index = 0; index < difficulties.size(); ++index)
 	{
 		//選んでいるものだけ黄色にして、左に印を付ける
 		const bool isSelected = (index == settings->GetSelectedIndex());
+		//上から1行ずつ下にずらす
 		const int y = DifficultyTopY + static_cast<int>(index) * DifficultyLineHeight;
 		const int color = isSelected ? SelectedColor : UnselectedColor;
+		//色だけだと見分けにくいので、選んでいる行には印も付ける
+		//印は名前の左に出し、名前の位置は選んでいてもいなくても同じにして、行がずれないようにする
 		if (isSelected)
 			DrawStringToHandle(DifficultyX - CursorOffsetX, y, ">", color, _messageFont);
 		DrawStringToHandle(DifficultyX, y, difficulties[index].name.c_str(), color, _messageFont);

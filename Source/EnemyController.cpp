@@ -8,6 +8,8 @@
 #include "GameWindow.h"
 #include "Collider.h"
 #include "DrawManager.h"
+#include "EffectUtillity.h"
+#include "GameTime.h"
 
 using namespace EnemyStates;
 
@@ -22,6 +24,10 @@ void EnemyController::Initialize(ServiceLocator& locator)
 	_soundManager = locator.soundManager;
 	_bounds = &locator.gameWindow->GetBounds();
 	_drawManager = locator.drawManager;
+
+	//弾が当たった時刻を覚えておき、描くときに一瞬白く光らせる
+	//倒しきれない硬い敵でも、当たっていることが分かるようにするため
+	_status->OnDamaged.Subscribe([this] { _hitTime = Time::GetWorldTime(); });
 
 	//ステートのOnEnterがここで呼ばれるため、ステートが使うものは先に設定しておく
 	InitializeStateMachine();
@@ -79,5 +85,7 @@ void EnemyController::DrawBody() const
 		const auto& pos = GetOwner()->GetTransform().Position;
 		//座標が画像の中心になる。画像は表示する大きさと向きに加工済みなので、等倍・回転なしで描く
 		DrawRotaGraph((int)pos.x, (int)pos.y, 1.0, 0.0, _status->GetImagePath(), TRUE);
+		if (EffectUtillity::IsHitFlashing(_hitTime))
+			EffectUtillity::DrawHitFlash(pos, _status->GetImagePath());
 	}
 }

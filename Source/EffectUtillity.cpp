@@ -3,6 +3,7 @@
 #include <DxLib.h>
 
 #include "EffectUtillity.h"
+#include "GameTime.h"
 
 //DxLibが読み込むWindowsのmin・maxマクロが、std::minとぶつかるので消す
 #undef min
@@ -46,5 +47,19 @@ void EffectUtillity::DrawAura(const Vector2& center, float radius, int color, in
 
 	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);//加算で光って見せる
 	DrawCircle((int)center.x, (int)center.y, (int)(radius + pulse * AuraPulseRadius), color, FALSE, level + 1);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+bool EffectUtillity::IsHitFlashing(float hitTime)
+{
+	return Time::GetWorldTime() - hitTime < HitFlashTime;
+}
+
+void EffectUtillity::DrawHitFlash(const Vector2& center, int image)
+{
+	//DxLibの明るさの設定は暗くすることしかできないので、同じ画像を加算で重ねて明るくする
+	//普通の加算では、暗い紫や灰色の多い敵の画像が白まで届かないので、4倍で足す加算を使う
+	SetDrawBlendMode(DX_BLENDMODE_ADD_X4, 255);
+	DrawRotaGraph((int)center.x, (int)center.y, 1.0, 0.0, image, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }

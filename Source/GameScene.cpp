@@ -19,9 +19,20 @@
 #include "SceneManager.h"
 #include "DrawManager.h"
 #include "GameSettings.h"
+#include "ScreenShake.h"
 
 namespace
 {
+	//画面の揺れの強さ（ピクセル）と長さ（秒）
+	struct ShakeSetting
+	{
+		float strength;
+		float duration;
+	};
+	constexpr ShakeSetting EnemyDefeatShake = { 3.0f, 0.15f };
+	constexpr ShakeSetting PlayerDamageShake = { 6.0f, 0.25f };
+	constexpr ShakeSetting BossDefeatShake = { 12.0f, 0.8f };
+
 	//出る間隔に倍率を掛けたウェーブ
 	WaveData ScaleInterval(WaveData wave, float rate)
 	{
@@ -125,7 +136,10 @@ void GameScene::WatchEnemyDeath(GameObject& enemy)
 	//画面の下へ通り抜けて消えた敵は、HPが減らないので落とさない
 	enemyStatus->OnHealthChanged.Subscribe([this, &enemy](float hp, float)
 		{
-			if (hp <= 0.0f) DropItem(enemy.GetTransform().Position);
+			if (hp > 0.0f) return;
+			//倒した手ごたえとして小さく揺らす。数が多いので、揺れで画面が見にくくならない強さにする
+			_locator.screenShake->Start(EnemyDefeatShake.strength, EnemyDefeatShake.duration);
+			DropItem(enemy.GetTransform().Position);
 		});
 }
 void GameScene::DropItem(const Vector2& position)
@@ -140,9 +154,12 @@ void GameScene::DropItem(const Vector2& position)
 }
 void GameScene::SetFallingItemType(GameObject& item)
 {
+	//アイテム用のスポナーから呼ばれるので、アイテム以外は来ないはずだが、念のため確かめる
 	auto* itemController = item.GetComponent<ItemController>();
 	if (itemController == nullptr) return;
 
+	//種類の決め方は、雑魚が落とすアイテムと同じにする（ピンチなら回復）
+	//決め方をItemDropperの1か所にまとめて、ボス戦だけ違う種類が出ることがないようにする
 	float hp = 0.0f;
 	float maxHp = 0.0f;
 	GetPlayerHp(hp, maxHp);
@@ -153,8 +170,10 @@ void GameScene::GetPlayerHp(float& hp, float& maxHp) const
 	//プレイヤーが見つからないときは、ピンチ扱いにならない値にする
 	hp = 1.0f;
 	maxHp = 1.0f;
+	//GameSceneはプレイヤーを直接持たないので、ほかのクラスと同じくPlayerProviderから探す
 	GameObject* player = _locator.playerProvider->GetPlayer();
 	if (player == nullptr) return;
+	//HPはPlayerStatusが持つ。今のHPと最大HPの両方を返し、割合の計算は呼ぶ側にまかせる
 	if (const auto* playerStatus = player->GetComponent<PlayerStatus>())
 	{
 		hp = playerStatus->GetHealth();
@@ -175,6 +194,12 @@ void GameScene::SubScribeEvents()
 	{
 		_hud.SetPlayerHp(playerStatus->GetHealth(), playerStatus->GetMaxHealth());   //初期値
 		playerStatus->OnHealthChanged.Subscribe([this](float hp, float maxHp) { _hud.SetPlayerHp(hp, maxHp); });
+		//被弾したら揺らして、点滅に気づく前でも「くらった」と分かるようにする
+		//回復では揺らさないように、HPの変化ではなくダメージの通知を使う
+		playerStatus->OnDamaged.Subscribe([this]
+			{
+				_locator.screenShake->Start(PlayerDamageShake.strength, PlayerDamageShake.duration);
+			});
 
 		//死亡時にGameOverへ遷移する
 		playerStatus->OnDeathFinished.Subscribe([this]
@@ -226,6 +251,11 @@ void GameScene::SpawnBoss()
 	{
 		_hud.SetBossHp(bossStatus->GetHealth(), bossStatus->GetMaxHealth());   //初期値
 		bossStatus->OnHealthChanged.Subscribe([this](float hp, float maxHp) { _hud.SetBossHp(hp, maxHp); });
+		//ボスを倒した瞬間は、雑魚より大きく長く揺らして、最後の山を越えたことを伝える
+		bossStatus->OnHealthChanged.Subscribe([this](float hp, float)
+			{
+				if (hp <= 0.0f) _locator.screenShake->Start(BossDefeatShake.strength, BossDefeatShake.duration);
+			});
 		//死亡時にGameClearへ遷移する
 		bossStatus->OnDeathFinished.Subscribe([this]
 			{

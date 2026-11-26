@@ -49,6 +49,7 @@ private:
 	void DrawBody() const;
 private:
 	bool _isDead = false;
+	float _hitTime = -100.0f;//最後に弾が当たった時刻。最初は光らせない
 	DrawManager* _drawManager = nullptr;
 
 	EnemyStatus* _status = nullptr;

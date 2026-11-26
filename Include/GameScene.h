@@ -28,7 +28,7 @@ private:
 	//index番目（0から）のウェーブを始める
 	void StartWave(size_t index);
 
-	//雑魚が倒されたら、その位置でアイテムを落とすかを決められるようにする
+	//雑魚が倒されたら、画面を小さく揺らし、その位置でアイテムを落とすかを決められるようにする
 	void WatchEnemyDeath(GameObject& enemy);
 	//落とすと決まったら、その位置にアイテムを出す
 	void DropItem(const Vector2& position);

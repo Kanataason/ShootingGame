@@ -191,13 +191,17 @@ ItemDropData JsonLoader::LoadItemDropData(const std::string& path) const
 	const json root = LoadJsonData(path);
 
 	//書いていない項目はItemDropDataの既定値を使う
+	//Dropごと無くても、既定値のままアイテムは落ちるようにする
 	ItemDropData data;
 	if (!root.contains("Drop")) return data;
 
 	const json& dropRoot = root.at("Drop");
+	//雑魚を倒したときの落とし方。確率は0〜1で書く
 	data.dropChance = dropRoot.value("Chance", data.dropChance);
 	data.pityCount = dropRoot.value("PityCount", data.pityCount);
+	//HPがこの割合以下なら、種類を回復に決める
 	data.pinchHpRatio = dropRoot.value("PinchHpRatio", data.pinchHpRatio);
+	//ボス戦で上から降らせる間隔。雑魚のウェーブと同じWaveDataに入れて、スポナーにそのまま渡せるようにする
 	data.bossFall.minInterval = dropRoot.value("BossMinInterval", data.bossFall.minInterval);
 	data.bossFall.maxInterval = dropRoot.value("BossMaxInterval", data.bossFall.maxInterval);
 	return data;

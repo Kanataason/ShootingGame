@@ -9,6 +9,8 @@
 #include "GameWindow.h"
 #include "GameObject.h"
 #include "DrawManager.h"
+#include "EffectUtillity.h"
+#include "GameTime.h"
 
 using namespace BossStates;
 
@@ -33,6 +35,8 @@ void BossController::Initialize(ServiceLocator& locator)
 void BossController::SubScribeEvents()
 {
 	_status->OnHealthChanged.Subscribe([this](float hp, float maxHp) { OnHealthChanged(hp, maxHp); });
+	//弾が当たった時刻を覚えておき、描くときに一瞬白く光らせる。HPが多いので、当たっている手ごたえを見せるため
+	_status->OnDamaged.Subscribe([this] { _hitTime = Time::GetWorldTime(); });
 
 }
 
@@ -115,6 +119,8 @@ void BossController::DrawBody() const
 	//座標が画像の中心になる。画像は表示する大きさと向きに加工済みなので、等倍・回転なしで描く
 	const auto& pos = GetOwner()->GetTransform().Position;
 	DrawRotaGraph((int)pos.x, (int)pos.y, 1.0, 0.0, _status->GetImagePath(), TRUE);
+	if (EffectUtillity::IsHitFlashing(_hitTime))
+		EffectUtillity::DrawHitFlash(pos, _status->GetImagePath());
 }
 
 

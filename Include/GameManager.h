@@ -10,6 +10,7 @@
 #include "DrawManager.h"
 #include "SoundManager.h"
 #include "GameSettings.h"
+#include "ScreenShake.h"
 
 #include "ServiceLocator.h"
 
@@ -42,6 +43,7 @@ private:
 	InputManager _inputManager;
 	BulletManager _bulletManager;
 	DrawManager _drawManager;
+	ScreenShake _screenShake;
 	SoundManager _soundManager;
 
 	GameObjectFactory _gameObjectFactory;

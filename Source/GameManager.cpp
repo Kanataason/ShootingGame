@@ -7,6 +7,8 @@ GameManager::GameManager(HWND hwnd) :_gameWindow(hwnd), _inputManager(_gameWindo
 	int height = 0;
 	GetDrawScreenSize(&width, &height);
 	_gameWindow.OnResize((float)width, (float)height);
+	//画面を揺らすための描画先も、同じ大きさで作る
+	_drawManager.Initialize(width, height);
 }
 
 void GameManager::Initialize()
@@ -38,7 +40,9 @@ void GameManager::Update(float deltaTime)
 	//描画は登録だけ行い、最後にレイヤーの順でまとめて描く
 	_drawManager.Register(DrawLayer::Bullet, [this] { _bulletManager.Draw(); });
 	_sceneManager.DrawUI();
-	_drawManager.Flush();
+	//揺れは、このフレームの処理で始まった分まで入れてから、ずらし量を決める
+	_screenShake.Update(deltaTime);
+	_drawManager.Flush(_screenShake.GetOffset());
 }
 
 ServiceLocator GameManager::CreateLocator()
@@ -56,6 +60,7 @@ ServiceLocator GameManager::CreateLocator()
 	locator.factory = &_gameObjectFactory;
 	locator.soundManager = &_soundManager;
 	locator.gameSettings = &_settings;
+	locator.screenShake = &_screenShake;
 
 	return locator;
 }

@@ -95,7 +95,7 @@ C++20 を使っているので、Visual Studio 2019（16.11 以降）/ 2022 / 20
 
 管理・その他
 　DrawManager / InputManager / SoundManager / JsonLoader / Datas.h /
-　GameHUD / BackgroundScroller / EffectUtillity
+　GameHUD / BackgroundScroller / EffectUtillity / ScreenShake
 
 
 
@@ -166,6 +166,9 @@ https://www.youtube.com/watch?v=PbtJt5tnnI8
 　EASY は「失敗の痛さ」を減らして余裕を増やし、HARD は「避けながら打つ」圧を増やす方向です。
 　倍率は Difficulty.json に書いてあり、どのクラスも難易度の名前ではなく、必要な倍率だけを読みます。
 
+・手ごたえの演出
+　弾が当たった敵は一瞬白く光り、雑魚を倒したとき・被弾したとき・ボスを倒したときは、強さを変えて画面が揺れます。
+　揺らすのはゲーム画面だけで、HUD は揺らさずに読みやすいままにしています。
 ・ヒートゲージ
 　撃つたびにヒートが溜まり、撃たずにいると冷えます。最大まで溜まるとオーバーヒートし、
 　0 まで冷えるまで撃てなくなります。押しっぱなしが一番強い状態にならないようにしています。
