@@ -58,7 +58,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR plCmdLine,
 
 			ScreenFlip();
 
-			if (CheckHitKey(KEY_INPUT_ESCAPE)) break;
+			//タイトルでEscを押すと終わる。ゲーム中のEscはタイトルに戻るだけなので、ここでは見ない
+			if (gameManager->IsQuitRequested()) break;
 		}
 	}
 	catch (const std::exception& exception)

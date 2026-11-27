@@ -25,6 +25,8 @@ public:
 
 	//更新順はInput->SceneManager->BulletManager->Resolve->Collision->描画の登録->Flush
 	void Update(float deltaTime);
+	//ゲームを終わるよう頼まれたか。メインループが毎フレーム見る
+	bool IsQuitRequested() const { return _sceneManager.IsQuitRequested(); }
 private:
 	ServiceLocator CreateLocator();
 

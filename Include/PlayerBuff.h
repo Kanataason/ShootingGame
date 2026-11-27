@@ -12,6 +12,8 @@ enum class BuffType
 
 //強化の色。機体とHUDで使う
 int GetBuffColor(BuffType type);
+//強化の頭文字（A、D、S、P、H）。アイテムとHUDの出番待ちで使う
+const char* GetBuffInitial(BuffType type);
 
 //1タイプ分の強化の状態
 struct BuffSlot

@@ -1,7 +1,7 @@
 {
     "Drop": {
-        "Chance": 0.3,
-        "PityCount": 4,
+        "Chance": 0.5,
+        "PityCount": 3,
         "PinchHpRatio": 0.3,
         "BossMinInterval": 4.0,
         "BossMaxInterval": 6.0

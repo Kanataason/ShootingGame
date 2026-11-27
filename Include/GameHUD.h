@@ -50,6 +50,8 @@ private:
 	void DrawCommand() const;
 	//強化の名前と方向列を1行描く。progressは入力済みの数
 	static void DrawCommandLine(int y, BuffType type, const std::vector<InputKeyName>& sequence, int progress);
+	//アイテムを拾ったまま出番を待っている強化を、頭文字で並べる（NEXT）
+	void DrawQueue() const;
 	//コマンドの後ろの半透明の板。longestは一番長い方向列の数
 	static void DrawCommandBack(int lineCount, size_t longest);
 	//かかっている強化の段階と残り秒数

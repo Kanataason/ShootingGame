@@ -129,15 +129,8 @@ void PlayerController::OnPickup(GameObject& item)
 	const ItemController* itemController = item.GetComponent<ItemController>();
 	if (itemController == nullptr) return;
 
-	_requestedBuffs.push_back(itemController->GetBuffType());
-}
-std::optional<BuffType> PlayerController::PopRequestedBuff()
-{
-	if (_requestedBuffs.empty()) return std::nullopt;
-
-	const BuffType type = _requestedBuffs.front();
-	_requestedBuffs.pop_front();
-	return type;
+	//出番待ちはコマンドの情報なので、PlayerCommandに持たせる。HUDにもそこから届く
+	_command->Request(itemController->GetBuffType());
 }
 
 void PlayerController::Draw()

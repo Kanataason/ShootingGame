@@ -7,6 +7,7 @@
 #include "EffectUtillity.h"
 #include "DrawManager.h"
 #include "GameSettings.h"
+#include "SoundManager.h"
 
 namespace
 {
@@ -29,6 +30,9 @@ Title::~Title()
 
 void Title::Initialize(ServiceLocator& locator)
 {
+	//ゲーム中にEscで戻ってきたとき、ゲームのBGMが鳴り続けないように止める
+	locator.soundManager->StopBgm();
+
 	_elapsed = 0.0f;
 	BaseScene::Initialize(locator);
 	_titleFont = CreateFontToHandle(nullptr, 50, 3);
@@ -49,6 +53,7 @@ void Title::Update(float deltaTime)
 			if (EffectUtillity::IsBlinkVisible(_elapsed, _interval))
 				DrawStringToHandle(200, 340, "PRESS SPACE TO START", TextColor, _messageFont);
 			DrawStringToHandle(215, 380, "↑↓ : 難易度を選ぶ", UnselectedColor, _messageFont);
+			DrawStringToHandle(240, 410, "ESC : 終了", UnselectedColor, _messageFont);
 		});
 
 	//難易度は矢印キーでもWSでも選べるようにする。ゲーム中の移動と同じキーでも迷わないため
@@ -61,6 +66,11 @@ void Title::Update(float deltaTime)
 	//切り替えは予約だけ。実際の切り替えは次のフレームの最初に行われる
 	if (_locator.input->GetKeyDown(VK_SPACE))
 		_locator.sceneManager->RequestChange(SceneName::EGameScene);
+
+	//タイトルでのEscはゲームを終わる。押した瞬間だけ見るので、ゲーム中にEscを押したまま戻ってきても、
+	//もう一度押すまでは終わらない
+	if (_locator.input->GetKeyDown(VK_ESCAPE))
+		_locator.sceneManager->RequestQuit();
 }
 
 void Title::DrawDifficulties() const

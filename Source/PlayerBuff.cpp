@@ -15,6 +15,20 @@ int GetBuffColor(BuffType type)
 	}
 }
 
+const char* GetBuffInitial(BuffType type)
+{
+	//色が見分けにくい人でも種類が分かるように、色と一緒に出す
+	switch (type)
+	{
+	case BuffType::Attack:  return "A";
+	case BuffType::Defense: return "D";
+	case BuffType::Speed:   return "S";
+	case BuffType::Predict: return "P";
+	case BuffType::Heal:    return "H";
+	default:                return "";
+	}
+}
+
 void PlayerBuff::Apply(BuffType type)
 {
 	//回復は段階を持たない

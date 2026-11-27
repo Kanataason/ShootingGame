@@ -24,6 +24,10 @@ public:
 	void Update(float deltaTime);
 	void RequestChange(SceneName name) { _nextScene = name; }   //予約するだけ
 	void DrawUI() { if (_currentScene) _currentScene->DrawUI(); }
+
+	//ゲームを終わる。シーンからはSceneManagerしか見えないので、ここで受けてメインループに伝える
+	void RequestQuit() { _isQuitRequested = true; }
+	bool IsQuitRequested() const { return _isQuitRequested; }
 private:
 	void ApplyChange();
 
@@ -33,6 +37,7 @@ private:
 	std::unordered_map<SceneName, SceneData> _sceneDataList;    //シーンの作り方だけ保存しておく
 	std::unique_ptr<BaseScene> _currentScene;
 	SceneName _nextScene = SceneName::None;
+	bool _isQuitRequested = false;
 
 	GameObjectFactory* _factory = nullptr;
 	ServiceLocator _locator{};

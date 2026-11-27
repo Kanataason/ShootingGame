@@ -28,6 +28,7 @@ void ScreenShake::Start(float strength, float duration)
 void ScreenShake::Update(float deltaTime)
 {
 	_remaining -= deltaTime;
+	//揺れ終わったら、ずらし量を0に戻して止める。0のままにしておくと、画面がずれたまま残らない
 	if (_remaining <= 0.0f)
 	{
 		_remaining = 0.0f;

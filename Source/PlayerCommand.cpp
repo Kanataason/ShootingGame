@@ -11,7 +11,7 @@ void PlayerCommand::Offer(std::vector<CommandCandidate> candidates, float offerT
 	_view.timeLimit = offerTime;
 	ResetProgress();
 	//HUDに候補を出させる
-	OnCommandChanged.Invoke(_view);
+	NotifyChanged();
 }
 
 void PlayerCommand::NotifyResult(CommandResult result)
@@ -43,7 +43,7 @@ bool PlayerCommand::Select(InputKeyName key)
 		ResetProgress();
 
 		Judge(key);//選んだキーが1文字目になる
-		OnCommandChanged.Invoke(_view);
+		NotifyChanged();
 		return true;
 	}
 	return false;
@@ -53,6 +53,32 @@ void PlayerCommand::Stop()
 {
 	_view = {};
 	ResetProgress();
+	NotifyChanged();
+}
+
+void PlayerCommand::Request(BuffType type)
+{
+	_requests.push_back(type);
+	//候補を出していない間でも、出番待ちが増えたことをHUDに出す
+	NotifyChanged();
+}
+
+std::optional<BuffType> PlayerCommand::PopRequest()
+{
+	//待っているものが無ければ、待機ステートは何もせず待ち続ける
+	if (_requests.empty()) return std::nullopt;
+
+	//拾った順に出すので、一番古いものから取り出す
+	const BuffType type = _requests.front();
+	_requests.pop_front();
+	//HUDのNEXTから、取り出した分を消す
+	NotifyChanged();
+	return type;
+}
+
+void PlayerCommand::NotifyChanged()
+{
+	_view.queued.assign(_requests.begin(), _requests.end());
 	OnCommandChanged.Invoke(_view);
 }
 
@@ -61,7 +87,7 @@ CommandResult PlayerCommand::Input(InputKeyName key)
 	if (_view.phase != CommandPhase::Input) return CommandResult::Progress;
 
 	CommandResult result = Judge(key);
-	OnCommandChanged.Invoke(_view);
+	NotifyChanged();
 	NotifyResult(result);//成功・誤入力
 	return result;
 }
@@ -123,7 +149,7 @@ CommandResult PlayerCommand::Tick(float deltaTime)
 		result = CommandResult::TimeOut;
 	}
 
-	OnCommandChanged.Invoke(_view);
+	NotifyChanged();
 	NotifyResult(result);
 	return result;
 }

@@ -193,7 +193,7 @@ namespace PlayerStates
 	void CommandIdleState::OnUpdate(float deltaTime)
 	{
 		//アイテムを拾っていなければ待ち続ける
-		const std::optional<BuffType> type = owner().PopRequestedBuff();
+		const std::optional<BuffType> type = owner().GetCommand()->PopRequest();
 		if (!type) return;
 
 		//拾ったアイテムの種類のコマンドだけを出す。何を拾ったかで、何の強化になるかが決まる

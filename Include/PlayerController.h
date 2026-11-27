@@ -1,10 +1,7 @@
 ﻿#pragma once
 #include <vector>
-#include <deque>
-#include <optional>
 
 #include "Component.h"
-#include "PlayerBuff.h"
 #include "StateMachine.h"
 #include "InputManager.h"
 #include "SoundManager.h"
@@ -71,10 +68,8 @@ public:
 	void PlaySe(SoundId id);
 	void MoveByInput(float deltaTime,float moveSpeed);
 
-	//アイテムを拾ったら、そのアイテムの強化のコマンドを出す予約をする
+	//アイテムを拾ったら、そのアイテムの強化をPlayerCommandの出番待ちに足す
 	void OnPickup(GameObject& item)override;
-	//一番古い予約を取り出す。予約が無ければ空。コマンドの待機ステートが読む
-	std::optional<BuffType> PopRequestedBuff();
 	//難易度による、コマンドの制限時間の倍率。コマンドを作るステートが読む
 	float GetCommandTimeRate() const { return _commandTimeRate; }
 
@@ -93,8 +88,6 @@ private:
 	void DrawHealEffect() const;
 private:
 	bool _isDead = false;
-	//コマンドの入力中に拾っても無駄にならないよう、待機に戻るまで拾った順に取っておく
-	std::deque<BuffType> _requestedBuffs;
 	float _commandTimeRate = 1.0f;
 	float _healEffectStartTime = -100.0f;//最初は表示しない
 

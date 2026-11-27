@@ -36,6 +36,14 @@ namespace
 	constexpr int CommandBackAlpha = 170;
 	constexpr int CommandBackPadding = 6;
 
+	//出番待ち（NEXT）。コマンドの板のすぐ下に、頭文字を強化の色で並べる
+	constexpr int QueueMarginY = 14;       //コマンドの板との間
+	constexpr int QueueLabelWidth = 48;    //「NEXT」の幅
+	constexpr int QueueSpacing = 18;       //頭文字の間隔
+	constexpr size_t QueueMaxShown = 5;    //これより多いときは「+n」でまとめる
+	constexpr int QueueMoreWidth = 30;     //「+n」の幅
+	constexpr int QueueLabelColor = 0xAAAAAA;
+
 	constexpr int BuffX = 480;
 	constexpr int BuffY = 380;//5行分が画面に収まる高さ
 	constexpr int BuffLineHeight = 20;
@@ -97,6 +105,7 @@ void GameHUD::Draw() const
 	DrawHeat();
 	DrawBossInfo();
 	DrawCommand();
+	DrawQueue();
 	DrawCommandResult();//方向列の上に重ねる
 	DrawBuffs();
 	DrawBanner();
@@ -215,6 +224,40 @@ void GameHUD::DrawCommand() const
 	//残り時間のバー（ラベルなし）
 	DrawBar(CommandX, CommandY + lineCount * CommandLineHeight, CommandBarWidth,
 		ToRatio(_command.remaining, _command.timeLimit), isOffer ? OfferTimeColor : InputTimeColor, "");
+}
+
+void GameHUD::DrawQueue() const
+{
+	if (_command.queued.empty()) return;
+
+	//コマンドが出ていればその板の下に、出ていなければコマンドの位置に出す
+	int lineCount = 0;
+	if (_command.phase == CommandPhase::Offer) lineCount = static_cast<int>(_command.candidates.size());
+	else if (_command.phase == CommandPhase::Input) lineCount = 1;
+	const int y = (lineCount == 0)
+		? CommandY
+		: CommandY + lineCount * CommandLineHeight + BarHeight + CommandBackPadding + QueueMarginY;
+
+	//多すぎると横に伸びて敵の弾と重なるので、上限を超えた分は数だけ出す
+	const size_t shownCount = (std::min)(_command.queued.size(), QueueMaxShown);
+	const size_t hiddenCount = _command.queued.size() - shownCount;
+
+	//コマンドと同じ半透明の板を敷いて、敵と重なっても読めるようにする
+	const int width = QueueLabelWidth + static_cast<int>(shownCount) * QueueSpacing + (hiddenCount > 0 ? QueueMoreWidth : 0);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, CommandBackAlpha);
+	DrawBox(CommandX - CommandBackPadding, y - CommandBackPadding / 2,
+		CommandX + width + CommandBackPadding, y + GetFontSize() + CommandBackPadding / 2, CommandBackColor, TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	//左から古い順。一番左が次に出る
+	DrawString(CommandX, y, "NEXT", QueueLabelColor);
+	for (size_t index = 0; index < shownCount; ++index)
+	{
+		const BuffType type = _command.queued[index];
+		DrawString(CommandX + QueueLabelWidth + static_cast<int>(index) * QueueSpacing, y, GetBuffInitial(type), GetBuffColor(type));
+	}
+	if (hiddenCount > 0)
+		DrawFormatString(CommandX + QueueLabelWidth + static_cast<int>(shownCount) * QueueSpacing, y, QueueLabelColor, "+%d", static_cast<int>(hiddenCount));
 }
 
 void GameHUD::DrawCommandBack(int lineCount, size_t longest)

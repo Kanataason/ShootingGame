@@ -40,6 +40,7 @@ void GameResult::Update(float deltaTime)
 		});
 
 	//切り替えは予約だけ。実際の切り替えは次のフレームの最初に行われる
-	if (_locator.input->GetKeyDown(VK_SPACE))
+	//Escでも戻れるようにして、ゲーム中と同じ「Escでタイトルへ」にそろえる
+	if (_locator.input->GetKeyDown(VK_SPACE) || _locator.input->GetKeyDown(VK_ESCAPE))
 		_locator.sceneManager->RequestChange(SceneName::EGameTitle);
 }

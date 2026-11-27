@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <vector>
+#include <deque>
+#include <optional>
 
 #include "Component.h"
 #include "Event.h"
@@ -43,6 +45,10 @@ struct CommandView
 	//OfferとInputのどちらでも、今の段階の残り時間
 	float remaining = 0.0f;
 	float timeLimit = 0.0f;
+
+	//アイテムを拾ったまま、出番を待っている強化。古い順
+	//今のコマンドが終わると、先頭から順に出る
+	std::vector<BuffType> queued;
 };
 
 //コマンドの候補と入力の進み具合を持ち、入力を判定する
@@ -75,7 +81,16 @@ public:
 
 	BuffType GetType() const { return _view.type; }
 
+	//拾ったアイテムの強化を、出番待ちの最後に足す
+	//コマンドの入力中に拾っても無駄にならないよう、今のコマンドが終わるまで取っておく
+	void Request(BuffType type);
+	//出番待ちの先頭を取り出す。待っているものが無ければ空。コマンドの待機ステートが読む
+	std::optional<BuffType> PopRequest();
+
 private:
+	//今の見た目に出番待ちを入れて、HUDに送る
+	//_viewは候補を出すたびに作り直すので、出番待ちは別に持ち、送る直前に入れる
+	void NotifyChanged();
 	//成功時や失敗時に呼んで、HUDに結果を表示させる
 	void NotifyResult(CommandResult result);
 
@@ -88,6 +103,7 @@ private:
 	static constexpr float GraceTime = 0.05f;
 
 	CommandView _view;
+	std::deque<BuffType> _requests;//出番待ち。拾った順
 	InputKeyName _pendingKey = InputKeyName::none;//猶予中で保留しているキー
 	float _graceRemaining = 0.0f;
 };

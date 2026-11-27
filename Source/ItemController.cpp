@@ -23,20 +23,6 @@ namespace
 	//強化のオーラと同じ光り方にして、「取ると強化につながる物」だと分かるようにする
 	constexpr int AuraLevel = 1;
 	constexpr float AuraRadiusOffset = 6.0f;
-
-	//本体に描く強化の頭文字。色が見分けにくい人でも種類が分かるようにする
-	const char* GetBuffInitial(BuffType type)
-	{
-		switch (type)
-		{
-		case BuffType::Attack:  return "A";
-		case BuffType::Defense: return "D";
-		case BuffType::Speed:   return "S";
-		case BuffType::Predict: return "P";
-		case BuffType::Heal:    return "H";
-		default:                return "";
-		}
-	}
 }
 
 void ItemController::Initialize(ServiceLocator& locator)

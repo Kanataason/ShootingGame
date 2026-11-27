@@ -17,6 +17,7 @@
 #include "EnemyStatus.h"
 #include "ItemController.h"
 #include "SceneManager.h"
+#include "InputManager.h"
 #include "DrawManager.h"
 #include "GameSettings.h"
 #include "ScreenShake.h"
@@ -282,4 +283,8 @@ void GameScene::Update(float deltaTime)
 
 	//シーン上のオブジェクトを全部動かし、消すものを消して、予約したものを加える
 	BaseScene::Update(deltaTime);
+
+	//Escでタイトルへ戻る。いきなりゲームを終わらせず、もう一度Escを押したときだけ終わるようにする
+	if (_locator.input->GetKeyDown(VK_ESCAPE))
+		_locator.sceneManager->RequestChange(SceneName::EGameTitle);
 }

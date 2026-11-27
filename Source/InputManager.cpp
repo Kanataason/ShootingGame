@@ -17,9 +17,6 @@ POINT InputManager::GetScreenCenter()
 
 void InputManager::Update()
 {
-    if (GetKey(VK_ESCAPE))
-        PostQuitMessage(0);
-
     //前のフレームを保存して、現在のフレームを更新する
     memcpy(_previous, _current, sizeof(_current));
 

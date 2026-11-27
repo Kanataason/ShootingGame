@@ -122,8 +122,8 @@ struct WaveData
 //アイテムの出し方。Items.jsonのDropから読む
 struct ItemDropData
 {
-	float dropChance = 0.3f;    //雑魚を倒したときに落とす確率（0〜1）
-	int pityCount = 4;          //この数だけ続けて落ちなかったら、次は必ず落とす
+	float dropChance = 0.5f;    //雑魚を倒したときに落とす確率（0〜1）
+	int pityCount = 3;          //この数だけ続けて落ちなかったら、次は必ず落とす
 	float pinchHpRatio = 0.3f;  //HPがこの割合以下なら、回復のアイテムを落とす
 	WaveData bossFall{};        //ボス戦で上から降らせる間隔。durationは使わない
 };
